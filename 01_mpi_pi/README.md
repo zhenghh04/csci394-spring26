@@ -75,7 +75,7 @@ mpiexec -n 16 python3 pi_mpi4py.py --samples 100000000
 ssh user@polaris.alcf.anl.gov
 
 # 2) Interactive run (example)
-qsub -I -l select=1:ncpus=4:mpiprocs=4 -l walltime=00:10:00 -A DLIO -q debug
+qsub -I -l select=1:ncpus=4:mpiprocs=4 -l walltime=00:10:00 -A DLIO -q debug -l filesystems=eagle:home
 
 # 3) Loading environment and run the job
 module load conda
