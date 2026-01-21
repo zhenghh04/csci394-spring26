@@ -80,12 +80,12 @@ qsub -I -l select=1:ncpus=4:mpiprocs=4 -l walltime=00:10:00 -A DLIO -q debug -l 
 # 3) Loading environment and run the job
 module load conda
 conda activate
-mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
-mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
-mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
-mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
-mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
-mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
+mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 ```
 
 Batch job example:
