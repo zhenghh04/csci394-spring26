@@ -63,7 +63,7 @@ def main() -> None:
         pi_est = 4.0 * total_hits / total_samples
         print(
             f"procs={size} samples={total_samples} hits={total_hits} "
-            f"pi≈{pi_est:.8f} time_s={max_elapsed:.6f}"
+            f"pi={pi_est:.8f} time_s={max_elapsed:.6f}"
         )
 
 if __name__ == "__main__":
