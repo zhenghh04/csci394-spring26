@@ -103,7 +103,7 @@ mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
+mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 ```
 
 ## Notes
@@ -114,7 +114,6 @@ mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 1000000
 ## Example results 
 
 ### MacBook Pro M1 Max
-
 
 ```text
 mpiexec -n 1 python3 pi_mpi4py.py --samples 100000000
