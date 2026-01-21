@@ -57,10 +57,19 @@ scp file user@host:/path # copy file to remote host
 
 ## Python and environments
 ```bash
-python3 --version
-python3 -m venv venv
-source venv/bin/activate
-pip install mpi4py
+python3 --version          # check Python version
+python3 -m venv venv       # create virtual environment
+source venv/bin/activate   # activate venv
+pip install matplotlib     # install matplotlib
+```
+
+## Git basics
+```bash
+git status            # show working tree status
+git pull              # fetch + merge from remote
+git add <file>        # stage changes
+git commit -m "message" # create a commit
+git push              # send commits to remote
 ```
 
 ## Tips

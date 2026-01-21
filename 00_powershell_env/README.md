@@ -55,10 +55,19 @@ scp file user@host:/path              # copy file to remote host (requires OpenS
 
 ## Python and environments
 ```powershell
-python --version
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-pip install mpi4py
+python --version                # check Python version
+python -m venv venv             # create virtual environment
+.\venv\Scripts\Activate.ps1     # activate venv
+pip install matplotlib          # install matplotlib
+```
+
+## Git basics
+```powershell
+git status            # show working tree status
+git pull              # fetch + merge from remote
+git add <file>        # stage changes
+git commit -m "message" # create a commit
+git push              # send commits to remote
 ```
 
 ## Tips
