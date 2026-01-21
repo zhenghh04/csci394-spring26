@@ -3,10 +3,10 @@
 Estimate pi with Monte Carlo using mpi4py.
 
 Run with:
-  mpiexec -n 1 python3 pi_mpi4py.py --samples 1000000
-  mpiexec -n 2 python3 pi_mpi4py.py --samples 1000000
-  mpiexec -n 4 python3 pi_mpi4py.py --samples 1000000
-  mpiexec -n 8 python3 pi_mpi4py.py --samples 1000000
+  mpiexec -n 1 python3 pi_mpi4py.py --samples 100000000
+  mpiexec -n 2 python3 pi_mpi4py.py --samples 100000000
+  mpiexec -n 4 python3 pi_mpi4py.py --samples 100000000
+  mpiexec -n 8 python3 pi_mpi4py.py --samples 100000000
   ...
 """
 
@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--samples",
         type=int,
-        default=1_000_000,
+        default=100_000_000,
         help="Total number of random samples across all ranks",
     )
     return parser.parse_args()
