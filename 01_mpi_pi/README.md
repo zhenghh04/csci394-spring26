@@ -180,7 +180,7 @@ procs=512 samples=100000000 hits=78536864 pi=3.14147456 time_s=0.039481
 ```
 
 ## Run on ALCF Polaris
-* Run interactively
+* Run interactively on a single node
 ```bash
 # 1) Log in and load modules (names may vary)
 ssh user@polaris.alcf.anl.gov
