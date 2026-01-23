@@ -1,69 +1,31 @@
-# GPU Pi Examples
+# GPU/CPU Pi (PyTorch)
 
-These examples estimate pi with a Monte Carlo method on a single GPU.
+This example estimates pi with a Monte Carlo method on a single device using PyTorch.
 
-## NVIDIA GPU (PyTorch CUDA)
-### Requirements
+## Requirements
 - Python 3
-- PyTorch CUDA build
-- NVIDIA GPU with CUDA drivers
+- PyTorch build for your device
 
 Install dependencies:
 ```bash
+# CPU or CUDA or MPS
 python -m pip install torch torchvision torchaudio
-```
 
-### Run
-```bash
-python3 pi_torch_cuda.py --samples 100000000
-```
-
-## Intel XPU (PyTorch)
-### Requirements
-- Python 3
-- PyTorch XPU build
-- Intel GPU with drivers + oneAPI runtime
-
-Install dependencies:
-```bash
+# Intel XPU
 python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu
 ```
 
-### Run
+## Run
 ```bash
-python3 pi_torch_xpu.py --samples 100000000
+python3 pi_torch.py --device auto --samples 100000000
 ```
 
-## Apple Silicon (Metal / MPS)
-### Requirements
-- Python 3
-- PyTorch with MPS support
-- macOS with Apple Silicon
-
-Install dependencies:
-```bash
-python -m pip install torch torchvision torchaudio
-```
-
-### Run
-```bash
-python3 pi_torch_mps.py --samples 100000000
-```
-
-## CPU baseline (PyTorch)
-### Requirements
-- Python 3
-- PyTorch (CPU build)
-
-Install dependencies:
-```bash
-python -m pip install torch torchvision torchaudio
-```
-
-### Run
-```bash
-python3 pi_torch_cpu.py --samples 100000000
-```
+Device options:
+- `auto` (default): pick the best available device
+- `cuda`: NVIDIA GPU
+- `xpu`: Intel XPU
+- `mps`: Apple Silicon (Metal)
+- `cpu`: CPU baseline
 
 ## Notes
-- These versions do not use MPI; they run on a single device (CPU or GPU).
+- This version does not use MPI; it runs on a single device.

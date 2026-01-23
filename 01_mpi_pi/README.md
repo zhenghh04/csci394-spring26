@@ -70,22 +70,10 @@ py -m pip install mpi4py
 ## GPU versions (NVIDIA + Intel XPU)
 GPU versions live in `../02_pi_gpu` (no MPI required).
 
-NVIDIA (PyTorch CUDA):
+PyTorch (single-device, auto-select):
 ```bash
 python -m pip install torch torchvision torchaudio
-python3 ../02_pi_gpu/pi_torch_cuda.py --samples 100000000
-```
-
-Intel XPU (PyTorch):
-```bash
-python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/xpu
-python3 ../02_pi_gpu/pi_torch_xpu.py --samples 100000000
-```
-
-Apple Silicon (Metal / MPS):
-```bash
-python -m pip install torch torchvision torchaudio
-python3 ../02_pi_gpu/pi_torch_mps.py --samples 100000000
+python3 ../02_pi_gpu/pi_torch.py --device auto --samples 100000000
 ```
 
 Notes:
