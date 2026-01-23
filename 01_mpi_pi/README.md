@@ -235,12 +235,12 @@ mpiexec -n 32 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
     conda activate
     # Run jobs on single node
     export SAMPLES=100000000
-    for n in 1 2 4 8 16 32 64 128 256
+    for n in 1 2 4 8 16 32 64 
     do
         mpiexec -n $n --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     done
-    mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
-    mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 128 --ppn 64 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 256 --ppn 64 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     ```
 
 * Submitting job

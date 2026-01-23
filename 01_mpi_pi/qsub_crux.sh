@@ -10,8 +10,9 @@ source /eagle/datasets/soft/crux/miniconda3.sh
 export SAMPLES=1000000000
 for n in 1 2 4 8 16 32 64 128 256
 do
-    mpiexec -n $n --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n $n --ppn $n --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
 done
-mpiexec -n 512 --ppn 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 1024 --ppn 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+# run jobs on multiple nodes
+mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 1024 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
 
