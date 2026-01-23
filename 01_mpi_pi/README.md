@@ -120,17 +120,17 @@ cd csci394-spring26/01_mpi_pi/
 source /eagle/datasets/soft/crux/miniconda3.sh
 # 5) Run jobs
 export SAMPLES=100000000
-mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 64 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
-mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLE
+mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 64 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
 ```
 ### Run in batch mode
 * Submission script: ``qsub_crux.sh``
