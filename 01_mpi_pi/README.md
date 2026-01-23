@@ -2,10 +2,17 @@
 
 This example estimates pi with a Monte Carlo method using `mpi4py`.
 
+## Hands-on summary
+- Understand parallelism with MPI ranks and work splitting.
+- Run the same program with different process counts and measure scaling.
+- Practice launching jobs on a supercomputer (PBS + `mpiexec`).
+- Compare performance between a laptop and an HPC system.
+
 ![MPI4PY Pi schematic](mpi_pi_schematic.svg)
 
 Each MPI rank generates random points, counts how many fall inside the unit circle,
 and the counts are reduced to rank 0 to compute pi as `4 * (inside / total)`.
+
 
 ## MPI quick start (no background needed)
 - MPI runs the same program on many processes (called "ranks").
@@ -76,7 +83,7 @@ mpiexec -n 16 python pi_mpi4py.py --samples 100000000
 
 **Example output on MacBook Pro M1 Max**
 
-```text
+```bash
 mpiexec -n 1 python pi_mpi4py.py --samples 100000000
 procs=1 samples=100000000 hits=78536872 pi≈3.14147488 time_s=9.136346
 
@@ -149,8 +156,8 @@ mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SA
     do
         mpiexec -n $n --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     done
-    mpiexec -n 512 --ppn 256 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
-    mpiexec -n 1024 --ppn 256 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 1024 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     ```
 * Submitting job
     ```bash
@@ -248,5 +255,3 @@ qsub qsub_aurora.sh
 **System specs used in results**
 - MacBook Pro M1 Max (CPU: 10 cores, 8 performance + 2 efficiency).
 - ALCF Crux compute nodes: 2x AMD EPYC 7742 (64 cores each), 128 cores per node, 256 nodes total.
-
-
