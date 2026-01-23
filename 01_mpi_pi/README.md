@@ -16,10 +16,10 @@ and the counts are reduced to rank 0 to compute pi as `4 * (inside / total)`.
 Try these in order:
 ```bash
 # One rank: behaves like a normal program
-mpiexec -n 1 python3 pi_mpi4py.py --samples 1000000
+mpiexec -n 1 python pi_mpi4py.py --samples 1000000
 
 # More ranks: same total work, split across processes
-mpiexec -n 4 python3 pi_mpi4py.py --samples 1000000
+mpiexec -n 4 python pi_mpi4py.py --samples 1000000
 ```
 
 ## Requirements
@@ -62,11 +62,11 @@ py -m pip install mpi4py
 
 ## Run mpi4py example on your laptop
 ```bash
-mpiexec -n 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 2 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 4 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 8 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 16 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 1 python pi_mpi4py.py --samples 100000000
+mpiexec -n 2 python pi_mpi4py.py --samples 100000000
+mpiexec -n 4 python pi_mpi4py.py --samples 100000000
+mpiexec -n 8 python pi_mpi4py.py --samples 100000000
+mpiexec -n 16 python pi_mpi4py.py --samples 100000000
 ```
 ### Notes
 - `--samples` is the total number of random points across all ranks.
@@ -77,22 +77,22 @@ mpiexec -n 16 python3 pi_mpi4py.py --samples 100000000
 **Example output on MacBook Pro M1 Max**
 
 ```text
-mpiexec -n 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 1 python pi_mpi4py.py --samples 100000000
 procs=1 samples=100000000 hits=78536872 pi≈3.14147488 time_s=9.136346
 
-mpiexec -n 2 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 2 python pi_mpi4py.py --samples 100000000
 procs=2 samples=100000000 hits=78539839 pi≈3.14159356 time_s=4.553073
 
-mpiexec -n 4 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 4 python pi_mpi4py.py --samples 100000000
 procs=4 samples=100000000 hits=78546745 pi≈3.14186980 time_s=2.311936
 
-mpiexec -n 8 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 8 python pi_mpi4py.py --samples 100000000
 procs=8 samples=100000000 hits=78546039 pi≈3.14184156 time_s=1.176690
 
-mpiexec -n 16 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 16 python pi_mpi4py.py --samples 100000000
 procs=16 samples=100000000 hits=78541643 pi≈3.14166572 time_s=1.377759
 
-mpiexec -n 32 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 32 python pi_mpi4py.py --samples 100000000
 procs=32 samples=100000000 hits=78538842 pi≈3.14155368 time_s=1.430259
 ```
 
@@ -120,17 +120,17 @@ cd csci394-spring26/01_mpi_pi/
 source /eagle/datasets/soft/crux/miniconda3.sh
 # 5) Run jobs
 export SAMPLES=100000000
-mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 64 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 1 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 2 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 4 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 8 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 16 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 32 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 64 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 256 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
 ```
 ### Run in batch mode
 * Submission script: ``qsub_crux.sh``
@@ -147,10 +147,10 @@ mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $S
     export SAMPLES=100000000
     for n in 1 2 4 8 16 32 64 128 256
     do
-        mpiexec -n $n --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+        mpiexec -n $n --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     done
-    mpiexec -n 512 --ppn 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-    mpiexec -n 1024 --ppn 256 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 512 --ppn 256 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 1024 --ppn 256 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     ```
 * Submitting job
     ```bash
@@ -192,12 +192,12 @@ qsub -I -l select=1:ncpus=256 -l walltime=00:10:00 -A DLIO -q debug -l filesyste
 module load conda
 conda activate
 cd csci394-spring26/01_mpi_pi/
-mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 8 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 16 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
-mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
+mpiexec -n 1 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
+mpiexec -n 2 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
+mpiexec -n 4 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
+mpiexec -n 8 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
+mpiexec -n 16 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
+mpiexec -n 32 --cpu-bind depth -d 1 python pi_mpi4py.py --samples 100000000
 ```
 
 ### Run on Batch mode: 
@@ -217,10 +217,10 @@ mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
     export SAMPLES=100000000
     for n in 1 2 4 8 16 32 64 128 256
     do
-        mpiexec -n $n --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+        mpiexec -n $n --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     done
-    mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-    mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
+    mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python pi_mpi4py.py --samples $SAMPLES
     ```
 
 * Submitting job
