@@ -233,6 +233,14 @@ mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
     # 3) Checking results
     cat mpi4py_pi_polaris.o*
     ```
+
+## Run on Aurora
+```bash
+ssh user@aurora.alcf.anl.gov
+git clone https://github.com/zhenghh04/csci394-spring26.git
+cd csci394-spring26/01_mpi_pi/
+qsub qsub_aurora.sh
+```    
 ## Comparing scaling performance 
 ![MPI4PY scaling plot (M1)](mpi4py_scaling_m1_vs_crux.png)
 
