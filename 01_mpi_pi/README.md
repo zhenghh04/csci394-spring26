@@ -156,7 +156,7 @@ mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $S
     ```bash
     # 1) Log in and load modules (names may vary)
     ssh user@crux.alcf.anl.gov
-    cd csci394-spring26
+    cd csci394-spring26/01_mpi_pi/
     qsub qsub_crux.sh
     # 2) Checking job status
     qstat -u $USER
@@ -191,6 +191,7 @@ qsub -I -l select=1:ncpus=256 -l walltime=00:10:00 -A DLIO -q debug -l filesyste
 # 3) Loading environment and run the job
 module load conda
 conda activate
+cd csci394-spring26/01_mpi_pi/
 mpiexec -n 1 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 mpiexec -n 2 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
 mpiexec -n 4 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
@@ -226,7 +227,7 @@ mpiexec -n 32 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples 100000000
     ```bash
     # 1) Log in and load modules (names may vary)
     ssh user@polaris.alcf.anl.gov
-    cd csci394-spring26
+    cd csci394-spring26/01_mpi_pi/
     qsub qsub_polaris.sh
     # 2) Checking job status
     qstat -u $USER
