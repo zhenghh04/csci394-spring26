@@ -3,7 +3,7 @@
 #PBS -l select=4:ncpus=256
 #PBS -l walltime=00:10:00
 #PBS -N mpi4py_pi_aurora
-#PBS -l filesystems=eagle:home
+#PBS -l filesystems=flare:home
 cd $HOME/csci394-spring26/01_mpi_pi/
 module load frameworks
 # Run jobs on single node
