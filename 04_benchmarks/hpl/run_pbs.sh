@@ -1,9 +1,11 @@
 #!/bin/bash
 #PBS -N hpl
-#PBS -l select=2:ncpus=4:mpiprocs=4
+#PBS -l select=2
 #PBS -l walltime=00:20:00
 #PBS -j oe
 #PBS -o hpl_${PBS_JOBID}.out
+#PBS -A datascience
+#PBS -l filesystems=home:eagle
 
 # Example module setup; adjust for your cluster
 # module purge
@@ -23,4 +25,4 @@ if [ ! -f HPL.dat ]; then
   exit 1
 fi
 
-mpirun -np 8 "$HPL_BIN"
+mpiexec -np 64 --cpu-bind depth -d 1 "$HPL_BIN"
