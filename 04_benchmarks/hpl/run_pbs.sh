@@ -1,9 +1,8 @@
 #!/bin/bash
 #PBS -N hpl
-#PBS -l select=2
+#PBS -l select=1
 #PBS -l walltime=00:20:00
 #PBS -j oe
-#PBS -o hpl_${PBS_JOBID}.out
 #PBS -A datascience
 #PBS -l filesystems=home:eagle
 
