@@ -6,17 +6,12 @@
 #PBS -A datascience
 #PBS -l filesystems=home:eagle
 
-# Example module setup; adjust for your cluster
-# module purge
-# module load hpl
-# module load mpi
-
 set -euo pipefail
 
-cd "${PBS_O_WORKDIR}"
+#cd "${PBS_O_WORKDIR}"
 
 # Path to HPL binary (xhpl is common on clusters)
-HPL_BIN=${HPL_BIN:-xhpl}
+HPL_BIN=${HPL_BIN:-"hpl-2.3/build/bin/xhpl"}
 
 # Ensure HPL.dat is in the current directory
 if [ ! -f HPL.dat ]; then
@@ -24,4 +19,4 @@ if [ ! -f HPL.dat ]; then
   exit 1
 fi
 
-mpiexec -np 64 --cpu-bind depth -d 1 "$HPL_BIN"
+mpirun -np 64  "$HPL_BIN"
