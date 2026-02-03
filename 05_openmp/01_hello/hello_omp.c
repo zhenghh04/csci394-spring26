@@ -2,11 +2,15 @@
 #include <stdio.h>
 
 int main(void) {
+    int tid = omp_get_thread_num();
+    int nthreads = omp_get_num_threads();
+    printf("[Outside] Hello from thread %d of %d\n", tid, nthreads);
+
     #pragma omp parallel
     {
         int tid = omp_get_thread_num();
         int nthreads = omp_get_num_threads();
-        printf("Hello from thread %d of %d\n", tid, nthreads);
+        printf("[Inside] Hello from thread %d of %d\n", tid, nthreads);
     }
     return 0;
 }
