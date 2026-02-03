@@ -80,3 +80,39 @@ for n in 1 2 4 8 16 32 64 128; do
   mpiexec -n $n python pi_mpi4py.py --samples $total
 done
 ```
+
+## Crux scaling assignment (32 ranks/node, up to 256 nodes)
+Below is a Crux-oriented template that uses **32 MPI ranks per node** and scales
+from 1 node to 256 nodes (max 8192 ranks). The strong-scaling section keeps total
+work fixed; the weak-scaling section keeps work per rank fixed.
+
+```bash
+#!/bin/bash
+#PBS -A DLIO
+#PBS -q debug-scaling
+#PBS -l select=256:ncpus=32:mpiprocs=32
+#PBS -l walltime=00:30:00
+#PBS -N mpi_pi_scaling
+#PBS -l filesystems=eagle:home
+#PBS -j oe
+
+cd $HOME/csci394-spring26/01_mpi_pi/
+source /eagle/datasets/soft/crux/miniconda3.sh
+
+# Strong scaling (fixed global work)
+SAMPLES=1000000000
+for nodes in 1 2 4 8 16 32 64 128 256; do
+  ranks=$((nodes * 32))
+  mpiexec -n $ranks --ppn 32 --cpu-bind depth -d 1 \
+    python pi_mpi4py.py --samples $SAMPLES
+done
+
+# Weak scaling (fixed work per rank)
+SAMPLES_PER_RANK=10000000
+for nodes in 1 2 4 8 16 32 64 128 256; do
+  ranks=$((nodes * 32))
+  total=$((SAMPLES_PER_RANK * ranks))
+  mpiexec -n $ranks --ppn 32 --cpu-bind depth -d 1 \
+    python pi_mpi4py.py --samples $total
+done
+```
