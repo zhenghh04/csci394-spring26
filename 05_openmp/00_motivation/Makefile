@@ -1,10 +1,10 @@
 CC ?= gcc
 CFLAGS ?= -O2 -Wall -Wextra -fopenmp
 
-all: sections_tasks
+all: motivation
 
-sections_tasks: sections_tasks.c
+motivation: motivation.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f sections_tasks
+	rm -f motivation

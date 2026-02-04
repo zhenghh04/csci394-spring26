@@ -4,10 +4,14 @@ This module includes a few small OpenMP examples, from very basic to slightly
 more advanced. Each subfolder contains a C source file and a simple Makefile.
 
 ## Contents
+- `00_motivation/` – serial vs parallel loop timing to motivate OpenMP.
+- `00_pitfalls/` – common OpenMP mistakes and fixes.
 - `01_hello/` – minimal parallel region; threads print their IDs.
-- `02_pi_for/` – `parallel for` loop to estimate pi.
-- `03_reduction_timing/` – reduction + timing; shows scaling by changing threads.
-- `04_sections_tasks/` – `sections` and a simple `task` example.
+- `02_set_threads/` – set thread count programmatically with `omp_set_num_threads()`.
+- `03_parallel_for/` – simple `parallel for` array addition.
+- `04_reduction_timing/` – reduction + timing; shows scaling by changing threads.
+- `05_sections_tasks/` – `sections` and a simple `task` example.
+- `06_pi_for/` – `parallel for` loop to estimate pi.
 
 
 ## Dependencies (OpenMP runtime)
