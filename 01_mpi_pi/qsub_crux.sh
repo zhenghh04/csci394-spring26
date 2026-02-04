@@ -13,6 +13,6 @@ do
     mpiexec -n $n --ppn $n --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
 done
 # run jobs on multiple nodes
+mpiexec -n 256 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
 mpiexec -n 512 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
-mpiexec -n 1024 --ppn 128 --cpu-bind depth -d 1 python3 pi_mpi4py.py --samples $SAMPLES
 
