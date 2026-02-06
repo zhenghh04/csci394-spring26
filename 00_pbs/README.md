@@ -193,9 +193,9 @@ scp user@crux.alcf.anl.gov:/path/to/folder/file /path_on_your_local_machine
 Sometimes, for debugging purpose, one can also run jobs interactively, 
 
 Step-by-step interactive run:
-1. Request an interactive job (adjust queue/resources for your site):
+1. Request an interactive job (adjust queue/resources according to your need:
     ```bash
-    qsub -I -l select=1 -l walltime=00:10:00 -q workq -A DLIO -l filesystems=home:eagle
+    qsub -I -l select=2 -l walltime=00:10:00 -q workq -A DLIO -l filesystems=home:eagle
     ```
 
 2. Wait for the prompt to move to a compute node (you will see a new hostname such as ```x1000c0s0b0n0```). This new hostname is one of **compute nodes** get allocated (usually is the first one on the list).
