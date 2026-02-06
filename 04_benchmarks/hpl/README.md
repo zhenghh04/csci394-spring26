@@ -44,3 +44,10 @@ Usage highlights:
 2. Edit `run_pbs.sh` to run jobs at certain node count
 
 3. Submit job: qsub run_pbs.sh
+
+**Note (running from subfolders)**: If you want to run multiple HPL jobs concurrently (different node counts or `HPL.dat` settings), create one subfolder per run and copy `HPL.dat` and `run_pbs.sh` into each subfolder.
+
+When running from a subfolder, update the binary path in `run_pbs.sh` so it points back to the built `xhpl`:
+```bash
+HPL_BIN=${HPL_BIN:-"../hpl-2.3/build/bin/xhpl"}
+```
