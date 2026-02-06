@@ -84,7 +84,8 @@ int main(int argc, char **argv) {
     if (rank == 0) {
         printf("# MPI ping-pong test (%d ranks, %d pairs)\n", size, half);
         printf("# size_bytes latency_us_avg latency_us_min latency_us_max "
-               "bandwidth_MBps_avg bandwidth_MBps_min bandwidth_MBps_max\n");
+               "bandwidth_MBps_sum bandwidth_MBps_avg bandwidth_MBps_min "
+               "bandwidth_MBps_max\n");
     }
 
     for (size_t msg = min_msg; msg <= max_msg; msg *= 2) {
@@ -157,10 +158,10 @@ int main(int argc, char **argv) {
                 lat_sum += l;
                 bw_sum += b;
             }
-            printf("%zu %.3f %.3f %.3f %.3f %.3f %.3f\n",
+            printf("%zu %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n",
                    msg,
                    lat_sum / (double)half, lat_min, lat_max,
-                   bw_sum / (double)half, bw_min, bw_max);
+                   bw_sum, bw_sum / (double)half, bw_min, bw_max);
             fflush(stdout);
             free(lat_all);
             free(bw_all);
