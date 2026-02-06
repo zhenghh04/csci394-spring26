@@ -5,16 +5,52 @@ This is a short tutorial for submitting and monitoring jobs with PBS Pro.
 ## Login and data transfer
 These steps are written for someone who has never used a supercomputer before.
 
+
 ### 0) Log in to the system
 ```bash
-ssh <your_netid>@<login-hostname>
+ssh <username>@<login-hostname>
 ```
-After you log in, you should be on a **login node** (not a compute node).
+You'll be prompt to input your password. This should be the 8-digit PIN number shown on your MobilePASS+ app. 
+
+
+**login-hostname for ALCF systems**
+* Crux: crux.alcf.anl.gov
+* Polaris: polaris.alcf.anl.gov
+* Aurora: aurora.alcf.anl.gov
+
+
+After you log in, you should be on a **login node** (uan node).
+
+```text
+(hzheng@crux.alcf.anl.gov) Password: 
+Last login: Fri Feb  6 03:30:30 2026 from 172.59.187.57
+(miniconda3)[hzheng@crux-uan-0002 ~]$ 
+```
+
+**Avoiding input PIN using SSH ControlMaster**
+`ControlMaster` lets SSH reuse a single connection for multiple sessions. This means you can open new `ssh` commands without re‑entering your password each time (as long as the master connection is alive). It is especially useful when you run many `ssh`, `scp`, or `rsync` commands in a row.
+
+Example `~/.ssh/config`:
+```sshconfig
+  ControlMaster auto
+  ControlPath ~/.ssh/master-%r@%h:%p
+  Host crux
+    HostName crux.alcf.anl.gov
+    User <username>
+
+  Host polaris
+    HostName polaris.alcf.anl.gov
+    User <username>
+```
+
+How it works:
+- The first `ssh crux` creates a **master** connection.
+- Additional `ssh/scp` commands reuse that connection.
 
 ### 0.1) Move files to the cluster 
 From your laptop:
 ```bash
-scp -r /path/to/directory/csci394-spring26 <your_netid>@<login-hostname>:/path/on/cluster
+scp -r /path/to/directory/csci394-spring26 <username>@<login-hostname>:/path/on/cluster
 ```
 You can also directly do ``git clone`` from the login node
 
@@ -79,6 +115,9 @@ mpiexec -n 2 --ppn 1 ./pingpong
 `PBS_O_WORKDIR` is an environment variable set by PBS that points to the
 directory where you ran `qsub`. Most scripts `cd "$PBS_O_WORKDIR"` so the job
 runs in the same folder where you submitted it.
+
+**Load your software environment inside the PBS script**
+Modules and environment changes you set on the login node do **not** automatically carry into the job. Always load modules (or activate conda/virtualenv) inside the submission script itself so the compute node sees the right environment.
 
 **Environment variables you can access inside the submission script**
 - `PBS_JOBID` job ID
@@ -155,41 +194,42 @@ Sometimes, for debugging purpose, one can also run jobs interactively,
 
 Step-by-step interactive run:
 1. Request an interactive job (adjust queue/resources for your site):
-```bash
-qsub -I -l select=1 -l walltime=00:10:00 -q workq -A DLIO -l filesystems=home:eagle
-```
+    ```bash
+    qsub -I -l select=1 -l walltime=00:10:00 -q workq -A DLIO -l filesystems=home:eagle
+    ```
 
 2. Wait for the prompt to move to a compute node (you will see a new hostname such as ```x1000c0s0b0n0```). This new hostname is one of **compute nodes** get allocated (usually is the first one on the list).
-```text
-qsub -q workq -I -A datascience -l walltime=1:00:00 -l select=1 -l filesystems=eagle:grand:home
-qsub: waiting for job 190321.crux-pbs-0001.head.cm.crux.alcf.anl.gov to start
-qsub: job 190321.crux-pbs-0001.head.cm.crux.alcf.anl.gov ready
+    ```text
+    qsub -q workq -I -A datascience -l walltime=1:00:00 -l select=1 -l filesystems=eagle:grand:home
+    qsub: waiting for job 190321.crux-pbs-0001.head.cm.crux.alcf.anl.gov to start
+    qsub: job 190321.crux-pbs-0001.head.cm.crux.alcf.anl.gov ready
 
-(miniconda3)[hzheng@x1000c0s0b0n0 ~]$ 
-```
+    (miniconda3)[hzheng@x1000c0s0b0n0 ~]$ 
+    ```
 
 3. Confirm you are on a compute node and the job is active:
-```bash
-$ hostname
-$ qstat -u $USER
+    ```bash
+    $ hostname
+    $ qstat -u $USER
 
-crux-pbs-0001.head.cm.crux.alcf.anl.gov: 
-                                                                 Req'd  Req'd   Elap
-Job ID               Username Queue    Jobname    SessID NDS TSK Memory Time  S Time
--------------------- -------- -------- ---------- ------ --- --- ------ ----- - -----
-190321.crux-pbs-000* hzheng   workq    STDIN      30806*   1 256    --  01:00 R 00:01
-```
+    crux-pbs-0001.head.cm.crux.alcf.anl.gov: 
+                                                                    Req'd  Req'd   Elap
+    Job ID               Username Queue    Jobname    SessID NDS TSK Memory Time  S Time
+    -------------------- -------- -------- ---------- ------ --- --- ------ ----- - -----
+    190321.crux-pbs-000* hzheng   workq    STDIN      30806*   1 256    --  01:00 R 00:01
+    ```
 
 
 4. Go to your working directory and load modules if needed:
-```bash
-cd "$PBS_O_WORKDIR"
-module load mpi
-```
+    ```bash
+    cd "$PBS_O_WORKDIR"
+    module load conda
+    conda activate
+    ```
 5. Run your program:
-```bash
-mpiexec -n 2 --ppn 1 ./pingpong
-```
+    ```bash
+    mpiexec -n 2 --ppn 1 --cpu-bind depth -d 1 ./pingpong
+    ```
 6. When finished, type `exit` to release the node.
 
 ## Common PBS commands
@@ -232,11 +272,21 @@ mpiexec -n 64 --ppn 32 --cpu-bind depth -d 1 ./my_program
   each rank is bound to 1 core. In general, **core depth** is the number of CPU
   cores assigned to each rank when using `--cpu-bind depth` (e.g., `-d 2` binds
   each rank to 2 cores).
- 
+
+
 
 ## Tips
 - Always `cd "$PBS_O_WORKDIR"` in batch scripts.
 - Start with small jobs to validate scripts before scaling up.
+- How to avoid typing password each time: Create or edit ~/.ssh/config
+
+  ```text
+
+  ```
+  Now you can log in with: ```ssh crux```
+
+
+
 
 ## Glossary (quick terms)
 - `PBS Pro` job scheduler used to submit and manage batch jobs.
