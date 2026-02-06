@@ -65,7 +65,7 @@ def main() -> int:
     parser.add_argument(
         "--utilization",
         type=float,
-        default=0.60,
+        default=0.50,
         help="Fraction of total memory to use (default: 0.50).",
     )
     parser.add_argument(
