@@ -8,7 +8,7 @@ You run **strong** and **weak** scaling by changing only inputs (`-n` and
 - `--samples` is the **total global samples across all ranks**.
 - Runtime line includes `procs=...` and `time_s=...`.
 
-## Strong scaling
+## Strong scaling on a single node
 Keep global work fixed; increase ranks.
 
 ```bash
@@ -25,10 +25,6 @@ procs=2 samples=100000000 hits=78539839 pi=3.14159356 time_s=4.548793
 procs=4 samples=100000000 hits=78546745 pi=3.14186980 time_s=2.282205
 procs=8 samples=100000000 hits=78546039 pi=3.14184156 time_s=1.159484
 ```
-
-Use these formulas:
-- speedup: `S(p) = T1 / Tp`
-- efficiency: `E(p) = S(p) / p`
 
 ## Weak scaling
 Keep work per rank fixed; increase ranks.  
@@ -55,64 +51,46 @@ procs=8 samples=80000000 hits=62836626 pi=3.14183130 time_s=0.930731
 procs=16 samples=160000000 hits=125665425 pi=3.14163563 time_s=2.017165
 ```
 
-## PBS batch template
-```bash
-#!/bin/bash
-#PBS -N mpi_pi_scaling
-#PBS -l select=1
-#PBS -l walltime=00:20:00
-#PBS -j oe
-#PBS -A DLIO
-#PBS -q workq
-#PBS -l filesystems=10
-cd "$PBS_O_WORKDIR"
+## Crux scaling assignment template (128 ranks/node)
+Below is a Crux-oriented template that uses **128 MPI ranks per node** and scales
+from 1 to 128 nodes. Adjust the account, queue, and filesystem settings for your
+allocation.
 
-# Strong scaling
-SAMPLES=100000000
-for n in 1 2 4 8 16 32 64 128; do
-  mpiexec -n $n python pi_mpi4py.py --samples $SAMPLES
-done
-
-# Weak scaling
-SAMPLES_PER_RANK=10000000
-for n in 1 2 4 8 16 32 64 128; do
-  total=$((SAMPLES_PER_RANK * n))
-  mpiexec -n $n python pi_mpi4py.py --samples $total
-done
-```
-
-## Crux scaling assignment (32 ranks/node, up to 256 nodes)
-Below is a Crux-oriented template that uses **32 MPI ranks per node** and scales
-from 1 node to 256 nodes (max 8192 ranks). The strong-scaling section keeps total
-work fixed; the weak-scaling section keeps work per rank fixed.
 
 ```bash
 #!/bin/bash
 #PBS -A DLIO
 #PBS -q debug-scaling
-#PBS -l select=256:ncpus=32:mpiprocs=32
+#PBS -l select=64
 #PBS -l walltime=00:30:00
 #PBS -N mpi_pi_scaling
 #PBS -l filesystems=eagle:home
 #PBS -j oe
 
-cd $HOME/csci394-spring26/01_mpi_pi/
+cd ${PBS_O_WORKDIR}
+
 source /eagle/datasets/soft/crux/miniconda3.sh
+
+NUM_NODES=$(cat "$PBS_NODEFILE" | uniq | wc -l)
+PPN=128
+RANKS=$((NUM_NODES * PPN))
 
 # Strong scaling (fixed global work)
 SAMPLES=1000000000
-for nodes in 1 2 4 8 16 32 64 128 256; do
-  ranks=$((nodes * 32))
-  mpiexec -n $ranks --ppn 32 --cpu-bind depth -d 1 \
+mpiexec -n $RANKS --ppn $PPN --cpu-bind depth -d 1 \
     python pi_mpi4py.py --samples $SAMPLES
-done
 
 # Weak scaling (fixed work per rank)
 SAMPLES_PER_RANK=10000000
-for nodes in 1 2 4 8 16 32 64 128 256; do
-  ranks=$((nodes * 32))
-  total=$((SAMPLES_PER_RANK * ranks))
-  mpiexec -n $ranks --ppn 32 --cpu-bind depth -d 1 \
-    python pi_mpi4py.py --samples $total
-done
+mpiexec -n $RANKS --ppn $PPN --cpu-bind depth -d 1 \
+    python pi_mpi4py.py --samples $((SAMPLES_PER_RANK * RANKS))
 ```
+
+Please run the scaling test from 1 node to 128 nodes. The strong-scaling section
+keeps total work fixed; the weak-scaling section keeps work per rank fixed.
+
+Deliverables:
+1. Plot total time to solution vs. number of nodes for both cases.
+2. Calculate scaling efficiency at 128 nodes:
+   - Strong scaling: efficiency = (T1 / (T128 * 128)) * 100%.
+   - Weak scaling: efficiency = (T1 / T128) * 100%.
