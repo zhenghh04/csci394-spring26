@@ -30,15 +30,25 @@ Example with MKL:
 BLAS_LIBS='-L/path/to/mkl -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm' make
 ```
 
-## Steps (typical)
-1. Load the vendor or cluster HPL module (or build HPL if required).
-2. Edit `HPL.dat` to match the number of MPI ranks and problem sizes you want.
-3. Submit `run_pbs.sh`.
-
 ## Notes
 - The `P x Q` process grid in `HPL.dat` must multiply to the number of ranks.
 - Problem size `N` should be large enough to fill most of the node memory.
 - Use a block size (`NB`) that matches your cluster guidance (often 192–384).
 
-If your cluster uses a different binary name or launch method, update
-`run_pbs.sh` accordingly.
+## Steps
+1. Edit `HPL.dat` to match the number of MPI ranks and problem sizes you want.
+    - Please run ``python hpl_size.py --mem 256gb --num-nodes NUM_NODES --count 3`` to get suggest problem sizes. 
+        ```text
+        3            # of problem sizes (N)
+        152000 160000 168000
+        ```
+    - The total number of MPI ranks should be NUM_NODES*128. 
+    - The process grid should be close to square as much as possible. For example, for 1 node, you can choose P=8, Q=16; for 16 nodes, you can choose P=32, Q=64. 
+        ```text
+        1            # of process grids (P x Q)
+        64           Ps
+        128          Qs
+        ```
+2. Edit `run_pbs.sh` to run jobs at certain node count
+
+3. Submit job: qsub run_pbs.sh
