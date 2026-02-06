@@ -65,7 +65,7 @@ def main() -> int:
     parser.add_argument(
         "--utilization",
         type=float,
-        default=0.50,
+        default=0.60,
         help="Fraction of total memory to use (default: 0.50).",
     )
     parser.add_argument(
@@ -83,8 +83,8 @@ def main() -> int:
     parser.add_argument(
         "--step-percent",
         type=float,
-        default=5.0,
-        help="Percent step between sizes when --count > 1 (default: 5.0).",
+        default=10.0,
+        help="Percent step between sizes when --count > 1 (default: 10.0).",
     )
     parser.add_argument(
         "--total-mem",
@@ -101,28 +101,27 @@ def main() -> int:
     if not args.total_mem:
         mem_bytes *= args.num_nodes
 
-    usable_bytes = args.utilization * mem_bytes
-    base_n = int(math.sqrt(usable_bytes / 8.0))
-    if base_n <= 0:
-        parser.error("Computed N is non-positive; check inputs.")
-
-    base_n -= base_n % args.nb
-
-    if base_n <= 0:
-        parser.error("Computed N is non-positive after NB rounding; check inputs.")
+    def compute_n(utilization: float) -> int:
+        usable_bytes = utilization * mem_bytes
+        n = int(math.sqrt(usable_bytes / 8.0))
+        if n <= 0:
+            parser.error("Computed N is non-positive; check inputs.")
+        n -= n % args.nb
+        if n <= 0:
+            parser.error("Computed N is non-positive after NB rounding; check inputs.")
+        return n
 
     values = []
-    if args.count == 1:
-        values = [base_n]
-    else:
-        step = args.step_percent / 100.0
-        for i in range(args.count):
-            offset = (i - (args.count - 1) / 2.0) * step
-            n = int(base_n * (1.0 + offset))
-            n -= n % args.nb
-            values.append(max(n, 1))
+    step = args.step_percent / 100.0
+    for i in range(args.count):
+        utilization = args.utilization - i * step
+        if utilization <= 0.0:
+            parser.error(
+                "--count/--step-percent reduce utilization to <= 0; check inputs."
+            )
+        values.append(compute_n(utilization))
 
-    print(" ".join(str(v) for v in values))
+    print(" ".join(str(v) for v in reversed(values)))
     return 0
 
 
