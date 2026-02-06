@@ -19,6 +19,7 @@ Use `run_pbs.sh` as a starting point. A minimal version looks like:
 #PBS -N pingpong
 #PBS -l select=1:ncpus=32:mpiprocs=2
 #PBS -l walltime=00:05:00
+#PBS -A DLIO
 #PBS -j oe
 
 cd "$PBS_O_WORKDIR"
@@ -31,31 +32,31 @@ mpiexec -n 2 --ppn 1 ./pingpong
 ```bash
 qsub run_pbs.sh
 ```
-You will get a job ID like `123456.server`.
+You will get a job ID like `123456.crux-pbs-0001`.
 
 ### 4) Monitor the job
 ```bash
 qstat -u $USER
-qstat -f 123456.server
+qstat -f 123456
 ```
 
 ### 5) View output
 After the job finishes, check the output file:
 ```bash
 ls -l
-cat pingpong.123456.server.out
+cat pingpong.o123456
 ```
 
 ### 6) Cancel or re-run
 ```bash
-qdel 123456.server
+qdel 123456
 qsub run_pbs.sh
 ```
 
 ### 7) Optional: interactive run
 If your site allows it, request an interactive node:
 ```bash
-qsub -I -l select=1:ncpus=32:mpiprocs=2 -l walltime=00:05:00 -q debug
+qsub -I -l select=1 -l walltime=00:05:00 -q workq
 ```
 Then run:
 ```bash
@@ -87,8 +88,8 @@ qstat -B               # server status
 cd "$PBS_O_WORKDIR"
 
 # load modules (adjust for your system)
-# module purge
-# module load mpi
+# module load conda
+# conda activate
 
 mpiexec -n 32 ./my_program
 ```
