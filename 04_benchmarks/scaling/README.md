@@ -60,7 +60,6 @@ allocation.
 ```bash
 #!/bin/bash
 #PBS -A DLIO
-#PBS -q debug-scaling
 #PBS -l select=64
 #PBS -l walltime=00:30:00
 #PBS -N mpi_pi_scaling
