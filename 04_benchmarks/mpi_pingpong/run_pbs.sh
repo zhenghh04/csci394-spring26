@@ -6,10 +6,6 @@
 #PBS -A datascience
 #PBS -l filesystems=home:eagle
 
-# Example module setup; adjust for your cluster
-# module purge
-# module load mpi
-
 set -euo pipefail
 
 cd ${PBS_O_WORKDIR}

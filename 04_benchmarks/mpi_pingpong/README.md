@@ -2,6 +2,7 @@
 
 Two-rank latency/bandwidth test using blocking send/recv. Rank 0 sends a
 message to rank 1 and receives it back; results are reported per message size.
+This benchmark should be run on two different nodes (one rank per node).
 
 ## Example plot
 The plot below shows one-way latency and effective bandwidth versus message
@@ -16,6 +17,7 @@ make
 ```
 
 ## Run (example)
+Request two nodes and place one rank per node.
 ```bash
 mpirun -np 2 --ppn 1 ./pingpong --min 1 --max 8M --iters 1000 --warmup 100
 ```
