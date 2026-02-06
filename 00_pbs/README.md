@@ -278,15 +278,6 @@ mpiexec -n 64 --ppn 32 --cpu-bind depth -d 1 ./my_program
 ## Tips
 - Always `cd "$PBS_O_WORKDIR"` in batch scripts.
 - Start with small jobs to validate scripts before scaling up.
-- How to avoid typing password each time: Create or edit ~/.ssh/config
-
-  ```text
-
-  ```
-  Now you can log in with: ```ssh crux```
-
-
-
 
 ## Glossary (quick terms)
 - `PBS Pro` job scheduler used to submit and manage batch jobs.
