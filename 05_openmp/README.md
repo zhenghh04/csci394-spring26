@@ -10,8 +10,12 @@ more advanced. Each subfolder contains a C source file and a simple Makefile.
 - `02_set_threads/` – set thread count programmatically with `omp_set_num_threads()`.
 - `03_parallel_for/` – simple `parallel for` array addition.
 - `04_reduction_timing/` – reduction + timing; shows scaling by changing threads.
-- `05_sections_tasks/` – `sections` and a simple `task` example.
-- `06_pi_for/` – `parallel for` loop to estimate pi.
+- `05_private/` – `private` variable example (data race vs fixed).
+- `06_sections_tasks/` – `sections` and a simple `task` example.
+- `07_pi_for/` – `parallel for` loop to estimate pi.
+- `08_physics_heat/` – 2D heat diffusion stencil kernel.
+- `09_materials_lj/` – Lennard-Jones force kernel.
+- `10_mechanics_laplacian/` – 2D Laplacian stencil kernel.
 
 
 ## Dependencies (OpenMP runtime)
@@ -52,3 +56,18 @@ OMP_NUM_THREADS=4 ./<program>
 ## Notes
 - Set threads with `OMP_NUM_THREADS` or `omp_set_num_threads()`.
 - On macOS, OpenMP requires `libomp` (`brew install libomp`).
+
+## Example: `private`
+`private` gives each thread its own copy of a variable.
+```c
+int i, tid;
+#pragma omp parallel private(i, tid)
+{
+    tid = omp_get_thread_num();
+    #pragma omp for
+    for (i = 0; i < N; i++) {
+        // use i and tid safely per-thread
+        a[i] = i + tid;
+    }
+}
+```

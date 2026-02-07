@@ -1,0 +1,10 @@
+# Minimal HPCG build config (edit for your system)
+CXX = mpicxx
+CC  = mpicc
+LINKER = mpicxx
+
+CXXFLAGS = -O3 -std=c++11
+LINKFLAGS =
+
+# You may need to add BLAS or other libs here
+LIBS =

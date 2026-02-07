@@ -1,0 +1,39 @@
+SHELL        = /bin/sh
+CD           = cd
+CP           = cp
+LN_S         = ln -s
+MKDIR        = mkdir -p
+RM           = /bin/rm -f
+
+ARCH         = UNKNOWN
+TOPdir       = /Users/huihuo.zheng/Desktop/CSCI394/csci394-spring26/04_benchmarks/hpl/hpl-2.3
+INCdir       = \/include
+BINdir       = \/bin/\
+LIBdir       = \/lib/\
+HPLlib       = \/libhpl.a
+
+MPdir        =
+MPinc        =
+MPlib        =
+
+LAdir        =
+LAinc        =
+LAlib        = -lopenblas
+
+CC           = mpicc
+CCNOOPT      = mpicc
+LINKER       = mpicc
+LINKFLAGS    =
+
+HPL_OPTS     =
+HPL_DEFS     =
+
+CCFLAGS      = \ \ -O3 -fomit-frame-pointer
+LINKFLAGS    = \
+
+HPL_INCLUDES = \ \ \
+HPL_LIBS     = \ \ \
+
+F2CDEFS      =
+F2CINC       =
+F2CLIBS      =
