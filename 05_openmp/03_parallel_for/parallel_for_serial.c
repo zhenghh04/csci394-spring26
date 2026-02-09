@@ -3,9 +3,18 @@
 #include <time.h>
 
 int main(int argc, char *argv[]) {
-    const int N = 16384;
+    const int N = 100000000;
     int i;
-    double a[N], b[N], result[N];
+    double *a = (double *)malloc((size_t)N * sizeof(double));
+    double *b = (double *)malloc((size_t)N * sizeof(double));
+    double *result = (double *)malloc((size_t)N * sizeof(double));
+    if (!a || !b || !result) {
+        fprintf(stderr, "Allocation failed for N=%d\n", N);
+        free(a);
+        free(b);
+        free(result);
+        return 1;
+    }
 
     // Initialize
     for (i = 0; i < N; i++) {
@@ -24,5 +33,8 @@ int main(int argc, char *argv[]) {
     double elapsed = (double)(t1.tv_sec - t0.tv_sec) +
                      1e-9 * (double)(t1.tv_nsec - t0.tv_nsec);
     printf("serial_time_s=%.6f\n", elapsed);
+    free(a);
+    free(b);
+    free(result);
     return 0;
 }
