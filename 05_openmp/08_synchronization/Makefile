@@ -21,10 +21,19 @@ else
 CFLAGS += -fopenmp
 endif
 
-all: reduction_timing
+all: atomic_counter critical_counter barrier_demo single_master_demo
 
-reduction_timing: reduction_timing.c
+atomic_counter: atomic_counter.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
+critical_counter: critical_counter.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
+barrier_demo: barrier_demo.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
+single_master_demo: single_master_demo.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -f reduction_timing
+	rm -f atomic_counter critical_counter barrier_demo single_master_demo

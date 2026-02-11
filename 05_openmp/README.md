@@ -9,14 +9,16 @@ more advanced. Each subfolder contains a C source file and a simple Makefile.
 - `01_hello/` – minimal parallel region; threads print their IDs.
 - `02_set_threads/` – set thread count programmatically with `omp_set_num_threads()`.
 - `03_parallel_for/` – simple `parallel for` array addition.
-- `04_reduction_timing/` – reduction + timing; shows scaling by changing threads.
-- `05_private/` – `private` variable example (data race vs fixed).
-- `06_sections/` – `sections` examples (`sum`, `sum2`, `sum3`, threshold counts).
-- `07_tasks/` – OpenMP `task` examples with Fibonacci workload.
-- `07_pi_for/` – `parallel for` loop to estimate pi.
-- `08_physics_heat/` – 2D heat diffusion stencil kernel.
-- `09_materials_lj/` – Lennard-Jones force kernel.
-- `10_mechanics_laplacian/` – 2D Laplacian stencil kernel.
+- `04_sections/` – `sections` examples (`sum`, `sum2`, `sum3`, threshold counts).
+- `05_tasks/` – OpenMP `task` examples with Fibonacci workload.
+- `06_private/` – `private` variable example (data race vs fixed).
+- `07_reduction/` – reduction examples.
+- `08_synchronization/` – `atomic`, `critical`, `barrier`, and `single/master` examples.
+- `09_pi_for/` – `parallel for` loop to estimate pi.
+- `10_physics_heat/` – 2D heat diffusion stencil kernel.
+- `11_materials_lj/` – Lennard-Jones force kernel.
+- `12_mechanics_laplacian/` – 2D Laplacian stencil kernel.
+- `13_ai_conv2d/` – Conv2D OpenMP example.
 
 
 ## Dependencies (OpenMP runtime)
