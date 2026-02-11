@@ -5,7 +5,6 @@ more advanced. Each subfolder contains a C source file and a simple Makefile.
 
 ## Contents
 - `00_motivation/` – serial vs parallel loop timing to motivate OpenMP.
-- `00_pitfalls/` – common OpenMP mistakes and fixes.
 - `01_hello/` – minimal parallel region; threads print their IDs.
 - `02_set_threads/` – set thread count programmatically with `omp_set_num_threads()`.
 - `03_parallel_for/` – simple `parallel for` array addition.
@@ -44,6 +43,25 @@ Windows:
   - `pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
   - Use the “MSYS2 MinGW 64-bit” shell and compile with `gcc -fopenmp`.
 
+## How to build an OpenMP C program
+General source file example: `file_omp.c`
+
+Linux (GCC):
+```bash
+gcc -O2 -fopenmp file_omp.c -o file_omp
+```
+
+macOS (clang + Homebrew `libomp`):
+```bash
+clang -O2 -Xpreprocessor -fopenmp \
+  -I/opt/homebrew/opt/libomp/include file_omp.c \
+  -L/opt/homebrew/opt/libomp/lib -lomp -o file_omp
+```
+
+Run:
+```bash
+OMP_NUM_THREADS=4 ./file_omp
+```
 
 ## Build (any folder)
 ```bash
@@ -59,18 +77,3 @@ OMP_NUM_THREADS=4 ./<program>
 ## Notes
 - Set threads with `OMP_NUM_THREADS` or `omp_set_num_threads()`.
 - On macOS, OpenMP requires `libomp` (`brew install libomp`).
-
-## Example: `private`
-`private` gives each thread its own copy of a variable.
-```c
-int i, tid;
-#pragma omp parallel private(i, tid)
-{
-    tid = omp_get_thread_num();
-    #pragma omp for
-    for (i = 0; i < N; i++) {
-        // use i and tid safely per-thread
-        a[i] = i + tid;
-    }
-}
-```
