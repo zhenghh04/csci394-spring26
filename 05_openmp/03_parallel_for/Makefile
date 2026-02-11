@@ -21,7 +21,7 @@ else
 CFLAGS += -fopenmp
 endif
 
-all: parallel_for_serial parallel_for_omp parallel_for_dist parallel_for_static_chunk parallel_for_schedule_bench
+all: parallel_for_serial parallel_for_omp parallel_for_dist parallel_for_static_chunk parallel_for_dynamic_chunk parallel_for_schedule_bench
 
 parallel_for_serial: parallel_for_serial.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
@@ -35,8 +35,11 @@ parallel_for_dist: parallel_for_dist.c
 parallel_for_static_chunk: parallel_for_static_chunk.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
+parallel_for_dynamic_chunk: parallel_for_dynamic_chunk.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
 parallel_for_schedule_bench: parallel_for_schedule_bench.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -f parallel_for_serial parallel_for_omp parallel_for_dist parallel_for_static_chunk parallel_for_schedule_bench
+	rm -f parallel_for_serial parallel_for_omp parallel_for_dist parallel_for_static_chunk parallel_for_dynamic_chunk parallel_for_schedule_bench
