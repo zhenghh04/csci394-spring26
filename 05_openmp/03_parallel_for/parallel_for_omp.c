@@ -4,7 +4,7 @@
 #include <time.h>
 
 int main(int argc, char *argv[]) {
-    const int N = 100000000;
+    const int N = 1000000;
     int i;
     double *a = (double *)malloc((size_t)N * sizeof(double));
     double *b = (double *)malloc((size_t)N * sizeof(double));
