@@ -3,6 +3,9 @@
 This module includes a few small OpenMP examples, from very basic to slightly
 more advanced. Each subfolder contains a C source file and a simple Makefile.
 
+Homework set for these examples:
+- `HOMEWORK_00_09.md`
+
 ## Contents
 - `00_motivation/` – serial vs parallel loop timing to motivate OpenMP.
 - `01_hello/` – minimal parallel region; threads print their IDs.
@@ -18,6 +21,7 @@ more advanced. Each subfolder contains a C source file and a simple Makefile.
 - `11_materials_lj/` – Lennard-Jones force kernel.
 - `12_mechanics_laplacian/` – 2D Laplacian stencil kernel.
 - `13_ai_conv2d/` – Conv2D OpenMP example.
+- `14_simd_completion/` – SIMD vs threads benchmark + thread completion imbalance study.
 
 
 ## Dependencies (OpenMP runtime)

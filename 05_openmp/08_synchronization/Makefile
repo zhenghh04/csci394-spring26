@@ -35,5 +35,8 @@ barrier_demo: barrier_demo.c
 single_master_demo: single_master_demo.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
+counter: counter.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
 clean:
 	rm -f atomic_counter critical_counter barrier_demo single_master_demo
