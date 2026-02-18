@@ -38,6 +38,8 @@ OMP_NUM_THREADS=1 ./loopy_assignment --dim 2048 --output loopy_t1.dat
 OMP_NUM_THREADS=2 ./loopy_assignment --dim 2048 --output loopy_t2.dat
 OMP_NUM_THREADS=4 ./loopy_assignment --dim 2048 --output loopy_t4.dat
 OMP_NUM_THREADS=8 ./loopy_assignment --dim 2048 --output loopy_t8.dat
+...
+OMP_NUM_THREADS=64 ./loopy_assignment --dim 2048 --output loopy_t64.dat
 ```
 
 ## Submission Checklist
@@ -49,6 +51,7 @@ OMP_NUM_THREADS=8 ./loopy_assignment --dim 2048 --output loopy_t8.dat
    - per-task timing table by thread count
    - speedup table (`T1 / Tp`) per task and overall
    - stencil comparison: with vs without `collapse(2)`
+   - what you learned from these experiments
 
 ## Notes
 1. Keep math and output format unchanged.
