@@ -7,6 +7,9 @@ Homework set for these examples:
 - `HOMEWORK_00_09.md`
 
 ## Contents
+- `assignments/` – assignment starter codes and specs for this module.
+- `threads_examples.py` – Python threading demos (basic threads, queue, lock, barrier, thread pool, timing).
+- `multithreads_io.py` – serial vs multithreaded file I/O benchmark in Python.
 - `00_motivation/` – serial vs parallel loop timing to motivate OpenMP.
 - `01_hello/` – minimal parallel region; threads print their IDs.
 - `02_set_threads/` – set thread count programmatically with `omp_set_num_threads()`.
@@ -76,6 +79,12 @@ make
 ```bash
 # Example: 4 threads
 OMP_NUM_THREADS=4 ./<program>
+
+# Python threading examples (non-OpenMP)
+python3 threads_examples.py --demo all
+
+# Python I/O multithreading benchmark
+python3 multithreads_io.py --files 20 --size-kb 128 --workers 6 --regenerate
 ```
 
 ## Notes

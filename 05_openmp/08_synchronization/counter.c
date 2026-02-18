@@ -20,6 +20,17 @@ int main(void) {
     }
 
 
+   #pragma omp parallel reduction(+:counter_single)
+    {
+        #pragma omp single
+        {
+            counter_single += 1;
+        }
+    }
+    
+    printf("======\n");
+
+
     #pragma omp parallel reduction(+:counter_single)
     {
         #pragma omp single
@@ -28,9 +39,18 @@ int main(void) {
             printf("[Inside single] I am %d\n", omp_get_thread_num());
         }
         printf("[Outside single] I am %d\n", omp_get_thread_num());
-
     }
     printf("======\n");
+
+
+
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        #pragma omp critical
+        {
+            counter_critical += 1;
+        }
+    }
 
     #pragma omp parallel for
     for (int i = 0; i < n; i++) {

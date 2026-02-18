@@ -27,3 +27,8 @@ make
 ```bash
 OMP_NUM_THREADS=4 ./heat2d
 ```
+
+## Assignment
+- Assignment materials were moved to:
+  - `../assignments/ASSIGNMENT_loopy_parallel.md`
+  - `../assignments/loopy_assignment.c`

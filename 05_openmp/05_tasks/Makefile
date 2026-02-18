@@ -21,7 +21,7 @@ else
 CFLAGS += -fopenmp
 endif
 
-all: fib fib_omp fib_omp_dynamic fib_omp_trace fib_omp_dynamic_trace tasks tasks_trace
+all: fib fib_omp fib_omp_dynamic fib_omp_trace fib_omp_dynamic_trace tasks tasks_trace depend_demo dag_pipeline_demo
 
 fib: fib.c
 	$(CC) -O2 -Wall -Wextra -o $@ $<
@@ -44,5 +44,11 @@ tasks: tasks.c
 tasks_trace: tasks_trace.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
+depend_demo: depend_demo.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
+dag_pipeline_demo: dag_pipeline_demo.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS) -lm
+
 clean:
-	rm -f fib fib_omp fib_omp_dynamic fib_omp_trace fib_omp_dynamic_trace tasks tasks_trace
+	rm -f fib fib_omp fib_omp_dynamic fib_omp_trace fib_omp_dynamic_trace tasks tasks_trace depend_demo dag_pipeline_demo
