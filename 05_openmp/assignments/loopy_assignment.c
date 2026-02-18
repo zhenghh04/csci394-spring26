@@ -6,8 +6,8 @@
  * 3. Stencil Computation
  * 4. Total Sum (serial)
  *
- * Usage: ./loopy --dim <N>
- * Example: ./loopy --dim 2048
+ * Usage: ./loopy --dim <N> --output <file.dat
+ * Example: ./loopy --dim 2048 --output loopy.dat
  *
  * Output: loopy.dat with sample values and total sum.
  */
