@@ -21,10 +21,8 @@ else
   CFLAGS += -fopenmp
 endif
 
-all: simd_threads_bench axpy_simd matmul_simd
+all:  axpy_simd matmul_simd
 
-simd_threads_bench: simd_threads_bench.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
 axpy_simd: axpy_simd.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
