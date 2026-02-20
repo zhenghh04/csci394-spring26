@@ -10,6 +10,7 @@ Homework set for these examples:
 - `assignments/` – assignment starter codes and specs for this module.
 - `threads_examples.py` – Python threading demos (basic threads, queue, lock, barrier, thread pool, timing).
 - `multithreads_io.py` – serial vs multithreaded file I/O benchmark in Python.
+- `00_makefile/` – basic Makefile tutorial for this module.
 - `00_motivation/` – serial vs parallel loop timing to motivate OpenMP.
 - `01_hello/` – minimal parallel region; threads print their IDs.
 - `02_set_threads/` – set thread count programmatically with `omp_set_num_threads()`.
@@ -25,6 +26,8 @@ Homework set for these examples:
 - `12_mechanics_laplacian/` – 2D Laplacian stencil kernel.
 - `13_ai_conv2d/` – Conv2D OpenMP example.
 - `14_simd_completion/` – SIMD vs threads benchmark + thread completion imbalance study.
+- `15_depend/` – minimal OpenMP task dependency (`depend`) pipeline example.
+- `16_target_offload/` – minimal OpenMP `target` offloading example (AXPY).
 
 
 ## Dependencies (OpenMP runtime)

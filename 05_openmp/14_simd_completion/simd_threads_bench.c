@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     double best_simd = 1e100, total_simd = 0.0, cs_simd = 0.0;
     for (int r = 0; r < repeats; r++) {
         double t0 = omp_get_wtime();
-#pragma omp simd
+        #pragma omp simd
         for (int i = 0; i < n; i++) {
             out[i] = a * x[i] + y[i];
         }
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     double best_threads = 1e100, total_threads = 0.0, cs_threads = 0.0;
     for (int r = 0; r < repeats; r++) {
         double t0 = omp_get_wtime();
-#pragma omp parallel for
+        #pragma omp parallel for
         for (int i = 0; i < n; i++) {
             out[i] = a * x[i] + y[i];
         }
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     double best_both = 1e100, total_both = 0.0, cs_both = 0.0;
     for (int r = 0; r < repeats; r++) {
         double t0 = omp_get_wtime();
-#pragma omp parallel for simd
+        #pragma omp parallel for simd
         for (int i = 0; i < n; i++) {
             out[i] = a * x[i] + y[i];
         }

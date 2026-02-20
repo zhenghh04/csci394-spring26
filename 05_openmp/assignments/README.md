@@ -21,6 +21,10 @@ Minimum requirement:
 1. target `loopy_assignment`
 2. builds `loopy_assignment.c` with OpenMP flags
 
+If you are new to Makefiles, read the basic tutorial first: [Makefile Basics Tutorial](../../00_makefile/README.md)
+
+That guide covers targets, recipes, OpenMP compile flags, and how to build executables from `*.o` files.
+
 ## Run Plan (Crux, Single Node)
 Use PBS and run at least these thread counts:
 1. `OMP_NUM_THREADS=1` (baseline)

@@ -6,19 +6,19 @@ LDFLAGS ?=
 LDLIBS ?=
 
 ifeq ($(UNAME_S),Darwin)
-CC := clang
-OMP_PREFIX := $(shell brew --prefix libomp 2>/dev/null)
-ifeq ($(OMP_PREFIX),)
-OMP_PREFIX := /opt/homebrew/opt/libomp
-ifeq ($(wildcard $(OMP_PREFIX)/include/omp.h),)
-OMP_PREFIX := /usr/local/opt/libomp
-endif
-endif
-CFLAGS += -Xpreprocessor -fopenmp -I$(OMP_PREFIX)/include
-LDFLAGS += -L$(OMP_PREFIX)/lib
-LDLIBS += -lomp
+  CC := clang
+  OMP_PREFIX := $(shell brew --prefix libomp 2>/dev/null)
+  ifeq ($(OMP_PREFIX),)
+    OMP_PREFIX := /opt/homebrew/opt/libomp
+    ifeq ($(wildcard $(OMP_PREFIX)/include/omp.h),)
+      OMP_PREFIX := /usr/local/opt/libomp
+    endif
+  endif
+  CFLAGS += -Xpreprocessor -fopenmp -I$(OMP_PREFIX)/include
+  LDFLAGS += -L$(OMP_PREFIX)/lib
+  LDLIBS += -lomp
 else
-CFLAGS += -fopenmp
+  CFLAGS += -fopenmp
 endif
 
 all: parallel_for_serial parallel_for_omp parallel_for_dist parallel_for_static_chunk parallel_for_dynamic_chunk parallel_for_schedule_bench

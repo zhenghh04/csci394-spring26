@@ -6,19 +6,19 @@ LDFLAGS ?=
 LDLIBS ?=
 
 ifeq ($(UNAME_S),Darwin)
-CC := clang
-OMP_PREFIX := $(shell brew --prefix libomp 2>/dev/null)
-ifeq ($(OMP_PREFIX),)
-OMP_PREFIX := /opt/homebrew/opt/libomp
-ifeq ($(wildcard $(OMP_PREFIX)/include/omp.h),)
-OMP_PREFIX := /usr/local/opt/libomp
-endif
-endif
-CFLAGS += -Xpreprocessor -fopenmp -I$(OMP_PREFIX)/include
-LDFLAGS += -L$(OMP_PREFIX)/lib
-LDLIBS += -lomp
+  CC := clang
+  OMP_PREFIX := $(shell brew --prefix libomp 2>/dev/null)
+  ifeq ($(OMP_PREFIX),)
+    OMP_PREFIX := /opt/homebrew/opt/libomp
+    ifeq ($(wildcard $(OMP_PREFIX)/include/omp.h),)
+      OMP_PREFIX := /usr/local/opt/libomp
+    endif
+  endif
+  CFLAGS += -Xpreprocessor -fopenmp -I$(OMP_PREFIX)/include
+  LDFLAGS += -L$(OMP_PREFIX)/lib
+  LDLIBS += -lomp
 else
-CFLAGS += -fopenmp
+  CFLAGS += -fopenmp
 endif
 
 all: fib fib_omp fib_omp_dynamic fib_omp_trace fib_omp_dynamic_trace tasks tasks_trace depend_demo dag_pipeline_demo

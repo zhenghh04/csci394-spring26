@@ -31,7 +31,6 @@ Files:
 - `fib_omp_dynamic_trace.c` (`parallel for schedule(dynamic,1)` + Chrome trace output)
 - `tasks.c` (clean version)
 - `tasks_trace.c` (timing + Chrome trace output)
-- `depend_demo.c` (`task depend(in/out)` pipeline example)
 - `dag_pipeline_demo.c` (realistic ETL/ML-style DAG with fork/join + ordered sink)
 
 ## Build
@@ -48,7 +47,6 @@ OMP_NUM_THREADS=4 ./fib_omp_trace
 OMP_NUM_THREADS=4 ./fib_omp_dynamic_trace
 OMP_NUM_THREADS=4 ./tasks
 OMP_NUM_THREADS=4 ./tasks_trace
-OMP_NUM_THREADS=4 ./depend_demo
 OMP_NUM_THREADS=4 ./dag_pipeline_demo
 # optional args: batches dim
 OMP_NUM_THREADS=4 ./dag_pipeline_demo 48 4096
@@ -60,12 +58,7 @@ OMP_NUM_THREADS=4 ./dag_pipeline_demo 48 4096
 - `depend(in: x)` says this task needs `x` first
 - `depend(inout: x)` says this task both reads and writes `x`
 
-`depend_demo.c` creates three tasks per index:
-1. produce `a[i]`
-2. transform `a[i] -> b[i]`
-3. finalize `b[i] -> c[i]`
-
-Different indices can run concurrently, while each index still preserves the required order.
+For a focused minimal example, see `../15_depend/depend_demo.c`.
 
 `dag_pipeline_demo.c` is a DAG-style application:
 - `load -> clean -> {feature_a, feature_b} -> merge -> infer -> write`
