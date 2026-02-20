@@ -6,6 +6,10 @@ This module shows a minimal OpenMP offload kernel using:
 
 The example computes AXPY (`out[i] = a*x[i] + y[i]`) and checks correctness against a host reference.
 
+This folder now includes two versions:
+- `target_axpy.c`: GPU offload path using `target` pragmas.
+- `parallel_axpy.c`: simple CPU path using `#pragma omp parallel for`.
+
 ## What `target` is doing
 - `target` moves execution of a code region from the host CPU to an OpenMP target device (typically a GPU), if one is available.
 - `target data` controls data movement for arrays:
@@ -27,8 +31,13 @@ Optional compiler offload target flags can be passed via `OFFLOAD_FLAGS`.
 
 ## Run
 ```bash
+# target offload version
 ./target_axpy
 ./target_axpy 4000000
+
+# host parallel-for version
+./parallel_axpy
+OMP_NUM_THREADS=8 ./parallel_axpy 4000000
 ```
 
 ## Notes

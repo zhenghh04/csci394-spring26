@@ -4,6 +4,8 @@ CC ?= gcc
 CFLAGS ?= -O2 -Wall -Wextra
 LDFLAGS ?=
 LDLIBS ?=
+CC_VERSION_LINE := $(shell $(CC) --version 2>/dev/null | head -n 1)
+IS_NVHPC := $(findstring NVIDIA,$(CC_VERSION_LINE))
 
 # Optional target-offload flags (set from command line if needed)
 # Example (LLVM+NVIDIA):
@@ -23,13 +25,21 @@ ifeq ($(UNAME_S),Darwin)
   LDFLAGS += -L$(OMP_PREFIX)/lib
   LDLIBS += -lomp
 else
+ifneq ($(IS_NVHPC),)
+  # Polaris with NVIDIA HPC compiler (cc -> nvc): OpenMP GPU offload flags.
+  CFLAGS += -mp=gpu -gpu=cc80
+else
   CFLAGS += -fopenmp
 endif
+endif
 
-all: target_axpy
+all: target_axpy parallel_axpy
 
 target_axpy: target_axpy.c
 	$(CC) $(CFLAGS) $(OFFLOAD_FLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
+parallel_axpy: parallel_axpy.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
 clean:
-	rm -f target_axpy
+	rm -f target_axpy parallel_axpy
