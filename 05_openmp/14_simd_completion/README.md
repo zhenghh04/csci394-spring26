@@ -4,6 +4,7 @@ This module demonstrates the interplay between SIMD vectorization and OpenMP thr
 `C = A x B`, where `A`, `B`, and `C` are all `N x N`.
 
 ## What is compared
+- `serial` (no OpenMP pragma)
 - `omp simd`
 - `omp parallel for`
 - `omp parallel for simd`

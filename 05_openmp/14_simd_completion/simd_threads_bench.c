@@ -54,6 +54,25 @@ int main(int argc, char **argv) {
     printf("Repeats: %d\n", repeats);
     printf("OMP_NUM_THREADS: %d\n\n", omp_get_max_threads());
 
+    double best_serial = 1e100, total_serial = 0.0, cs_serial = 0.0;
+    for (int r = 0; r < repeats; r++) {
+        memset(c, 0, nn * sizeof(double));
+        double t0 = omp_get_wtime();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                double sum = 0.0;
+                for (int k = 0; k < n; k++) {
+                    sum += a[(size_t)i * n + k] * b[(size_t)k * n + j];
+                }
+                c[(size_t)i * n + j] = sum;
+            }
+        }
+        double t = omp_get_wtime() - t0;
+        total_serial += t;
+        if (t < best_serial) best_serial = t;
+        cs_serial = checksum(c, (int)nn);
+    }
+
     double best_simd = 1e100, total_simd = 0.0, cs_simd = 0.0;
     for (int r = 0; r < repeats; r++) {
         memset(c, 0, nn * sizeof(double));
@@ -117,6 +136,7 @@ int main(int argc, char **argv) {
 
     printf("%-22s %12s %12s %16s\n", "Case", "Best (s)", "Mean (s)", "Checksum");
     printf("%-22s %12s %12s %16s\n", "----------------------", "----------", "----------", "----------------");
+    printf("%-22s %12.6f %12.6f %16.6e\n", "Serial", best_serial, total_serial / repeats, cs_serial);
     printf("%-22s %12.6f %12.6f %16.6e\n", "SIMD", best_simd, total_simd / repeats, cs_simd);
     printf("%-22s %12.6f %12.6f %16.6e\n", "OMP parallel for", best_threads, total_threads / repeats, cs_threads);
     printf("%-22s %12.6f %12.6f %16.6e\n", "OMP parallel for simd", best_both, total_both / repeats, cs_both);
