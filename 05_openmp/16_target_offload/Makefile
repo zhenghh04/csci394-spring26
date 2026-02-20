@@ -6,13 +6,19 @@ LDFLAGS ?=
 LDLIBS ?=
 CC_VERSION_LINE := $(shell $(CC) --version 2>/dev/null | head -n 1)
 IS_NVHPC := $(findstring NVIDIA,$(CC_VERSION_LINE))
+CC_BASENAME := $(notdir $(CC))
 
 # Optional target-offload flags (set from command line if needed)
 # Example (LLVM+NVIDIA):
 # make OFFLOAD_FLAGS='-fopenmp-targets=nvptx64-nvidia-cuda'
 OFFLOAD_FLAGS ?=
 
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(CC_BASENAME),cc)
+  # Polaris wrapper: force the known-working OpenMP GPU flags.
+  CFLAGS := -O2 -Wall -Wextra -mp=gpu -gpu=cc80
+  LDFLAGS :=
+  LDLIBS :=
+else ifeq ($(UNAME_S),Darwin)
   CC := clang
   OMP_PREFIX := $(shell brew --prefix libomp 2>/dev/null)
   ifeq ($(OMP_PREFIX),)
