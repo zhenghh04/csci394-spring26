@@ -21,10 +21,16 @@ else
   CFLAGS += -fopenmp
 endif
 
-all: simd_threads_bench
+all: simd_threads_bench axpy_simd matmul_simd
 
 simd_threads_bench: simd_threads_bench.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
+axpy_simd: axpy_simd.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
+matmul_simd: matmul_simd.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
 clean:
-	rm -f simd_threads_bench
+	rm -f simd_threads_bench axpy_simd matmul_simd
