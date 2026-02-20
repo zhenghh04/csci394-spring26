@@ -13,7 +13,7 @@ CC_BASENAME := $(notdir $(CC))
 # make OFFLOAD_FLAGS='-fopenmp-targets=nvptx64-nvidia-cuda'
 OFFLOAD_FLAGS ?=
 
-ifeq ($(CC_BASENAME),cc)
+ifneq ($(and $(filter cc,$(CC_BASENAME)),$(IS_NVHPC)),)
   # Polaris wrapper: force the known-working OpenMP GPU flags.
   CFLAGS := -O2 -Wall -Wextra -mp=gpu -gpu=cc80
   LDFLAGS :=
@@ -39,7 +39,7 @@ else
 endif
 endif
 
-all: target_axpy parallel_axpy
+all: target_axpy parallel_axpy target_matmul parallel_matmul
 
 target_axpy: target_axpy.c
 	$(CC) $(CFLAGS) $(OFFLOAD_FLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
@@ -47,5 +47,11 @@ target_axpy: target_axpy.c
 parallel_axpy: parallel_axpy.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
 
+target_matmul: target_matmul.c
+	$(CC) $(CFLAGS) $(OFFLOAD_FLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
+parallel_matmul: parallel_matmul.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LDLIBS)
+
 clean:
-	rm -f target_axpy parallel_axpy
+	rm -f target_axpy parallel_axpy target_matmul parallel_matmul
