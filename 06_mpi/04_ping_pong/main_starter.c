@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     }
 
     // TODO 1: parse args (msg_bytes, iters, warmup) with defaults.
-    int msg_bytes = 1 << 20;  // 1 MiB
+    int msg_bytes = 1048576;  // 1 MiB
     int iters = 100;
     int warmup = 10;
 
