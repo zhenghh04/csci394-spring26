@@ -19,11 +19,11 @@ int main(int argc, char **argv) {
 
     if (rank == 0) {
         MPI_Status st;
-        for (int src = 1; src < size; src += 2) {
+        for (int src = 1; src < size; src += 1) {
             MPI_Recv(&token, 1, MPI_INT, src, tag, MPI_COMM_WORLD, &st);
             printf("rank 0 received token=%d from rank %d\n", token, st.MPI_SOURCE);
         }
-    } else if (rank % 2 == 1) {
+    } else {
         token = 1000 + rank;
         MPI_Send(&token, 1, MPI_INT, 0, tag, MPI_COMM_WORLD);
         printf("rank %d sent token=%d to rank 0\n", rank, token);
