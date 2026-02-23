@@ -1,4 +1,3 @@
-```bash
 #!/bin/bash
 #PBS -N mpi_pi_scaling
 #PBS -l select=1
