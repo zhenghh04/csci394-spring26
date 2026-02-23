@@ -14,14 +14,19 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    const int tag = 0;
     int token = 0;
+
     if (rank == 0) {
-        token = 394;
-        MPI_Send(&token, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-        printf("rank 0 sent token=%d to rank 1\n", token);
-    } else if (rank == 1) {
-        MPI_Recv(&token, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        printf("rank 1 received token=%d from rank 0\n", token);
+        MPI_Status st;
+        for (int src = 1; src < size; src += 2) {
+            MPI_Recv(&token, 1, MPI_INT, src, tag, MPI_COMM_WORLD, &st);
+            printf("rank 0 received token=%d from rank %d\n", token, st.MPI_SOURCE);
+        }
+    } else if (rank % 2 == 1) {
+        token = 1000 + rank;
+        MPI_Send(&token, 1, MPI_INT, 0, tag, MPI_COMM_WORLD);
+        printf("rank %d sent token=%d to rank 0\n", rank, token);
     }
 
     MPI_Finalize();

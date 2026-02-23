@@ -1,10 +1,21 @@
 CC ?= mpicc
 CFLAGS ?= -O3 -std=c11 -Wall -Wextra
 
-all: app
+APPS := bcast scatter gather reduce
 
-app: main.c
+all: $(APPS)
+
+bcast: bcast.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+scatter: scatter.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+gather: gather.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+reduce: reduce.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f app
+	rm -f $(APPS)

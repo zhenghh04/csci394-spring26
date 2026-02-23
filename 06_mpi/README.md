@@ -7,8 +7,8 @@ This module mirrors the style of `05_openmp`: small, focused examples from basic
 - `01_hello/` - minimal MPI hello world with rank IDs.
 - `02_rank_info/` - rank, world size, and hostname (`MPI_Get_processor_name`).
 - `03_send_recv/` - first point-to-point message (`MPI_Send`/`MPI_Recv`).
-- `04_ring/` - ring communication using `MPI_Sendrecv_replace`.
-- `05_collectives/` - `Bcast`, `Scatter`, `Gather`, and `Reduce` in one example.
+- `04_ping_pong/` - ping-pong microbenchmark for round-trip latency and bandwidth.
+- `05_collectives/` - separate demos for `Bcast`, `Scatter`, `Gather`, and `Reduce`.
 - `06_pi_reduce/` - numerical pi integration with distributed reduction.
 - `07_nonblocking/` - neighbor exchange with `MPI_Isend`/`MPI_Irecv`.
 - `08_allreduce/` - global L2 norm with `MPI_Allreduce`.
@@ -40,7 +40,7 @@ mpiexec -n 8 ./app 50000000
 1. `01_hello`
 2. `02_rank_info`
 3. `03_send_recv`
-4. `04_ring`
+4. `04_ping_pong`
 5. `05_collectives`
 6. `06_pi_reduce`
 7. `07_nonblocking`
