@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="MPI ring neighbor exchange schematic">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0b5fff" />
+    </marker>
+    <style>
+      .title { font: 700 28px 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #102a43; }
+      .subtitle { font: 500 16px 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #334e68; }
+      .node { fill: #f0f4f8; stroke: #243b53; stroke-width: 2; }
+      .rank { font: 700 24px 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #102a43; text-anchor: middle; dominant-baseline: middle; }
+      .arrow { fill: none; stroke: #0b5fff; stroke-width: 4; marker-end: url(#arrow); }
+      .flow { font: 600 14px 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #0b5fff; }
+      .math { font: 500 18px 'Courier New', monospace; fill: #102a43; }
+      .legend { font: 500 15px 'Helvetica Neue', Helvetica, Arial, sans-serif; fill: #243b53; }
+      .legend-dot { fill: #0b5fff; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="560" fill="#ffffff"/>
+
+  <text x="40" y="50" class="title">MPI Nonblocking Neighbor Exchange (Ring)</text>
+  <text x="40" y="78" class="subtitle">Each rank sends its rank to the right and receives from the left</text>
+
+  <!-- Nodes (size = 4 example) -->
+  <circle cx="250" cy="180" r="52" class="node"/>
+  <circle cx="650" cy="180" r="52" class="node"/>
+  <circle cx="650" cy="380" r="52" class="node"/>
+  <circle cx="250" cy="380" r="52" class="node"/>
+
+  <text x="250" y="180" class="rank">0</text>
+  <text x="650" y="180" class="rank">1</text>
+  <text x="650" y="380" class="rank">2</text>
+  <text x="250" y="380" class="rank">3</text>
+
+  <!-- Send-to-right arrows: 0->1->2->3->0 -->
+  <path d="M 304 180 L 596 180" class="arrow"/>
+  <path d="M 650 234 L 650 326" class="arrow"/>
+  <path d="M 596 380 L 304 380" class="arrow"/>
+  <path d="M 250 326 L 250 234" class="arrow"/>
+
+  <text x="430" y="165" class="flow">send rank to right</text>
+  <text x="665" y="286" class="flow" transform="rotate(90 665 286)">send rank to right</text>
+
+  <!-- Per-rank mapping -->
+  <text x="40" y="470" class="math">left  = (rank - 1 + size) % size</text>
+  <text x="40" y="500" class="math">right = (rank + 1) % size</text>
+
+  <text x="470" y="470" class="legend">Rank 0: recv from 3, send to 1</text>
+  <text x="470" y="495" class="legend">Rank 1: recv from 0, send to 2</text>
+  <text x="470" y="520" class="legend">Rank 2: recv from 1, send to 3</text>
+  <text x="470" y="545" class="legend">Rank 3: recv from 2, send to 0</text>
+
+  <circle cx="40" cy="110" r="7" class="legend-dot"/>
+  <text x="58" y="116" class="legend">Arrow direction = nonblocking Isend to right neighbor</text>
+</svg>

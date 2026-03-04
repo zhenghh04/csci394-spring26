@@ -129,6 +129,39 @@ MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 ---
 
+# Creating Subcommunicators (`MPI_Comm_split`)
+
+Why split communicators?
+
+- isolate independent communication groups
+- avoid message interference across phases/teams
+- build node-level, pipeline-stage, or model-parallel groups
+
+C MPI pattern:
+
+```c
+int color = rank % 2;      // group id
+int key = rank;            // ordering inside group
+MPI_Comm subcomm;
+MPI_Comm_split(MPI_COMM_WORLD, color, key, &subcomm);
+
+int sub_rank, sub_size;
+MPI_Comm_rank(subcomm, &sub_rank);
+MPI_Comm_size(subcomm, &sub_size);
+```
+
+`mpi4py` equivalent:
+
+```python
+subcomm = MPI.COMM_WORLD.Split(color=rank % 2, key=rank)
+sub_rank = subcomm.Get_rank()
+sub_size = subcomm.Get_size()
+```
+
+![MPI communicator split schematic](assets/mpi_comm_split_schematic.svg)
+
+---
+
 # Teaching Demo 1
 
 Use local code:
@@ -411,6 +444,34 @@ Safety: do not reuse/overwrite send buffers before completion.
 
 ---
 
+# Overlap Example: Halo Exchange + Compute
+
+```c
+// Exchange boundary rows with neighbors while computing interior rows.
+MPI_Request reqs[4];
+MPI_Irecv(top_ghost, n, MPI_DOUBLE, up,   100, comm, &reqs[0]);
+MPI_Irecv(bot_ghost, n, MPI_DOUBLE, down, 101, comm, &reqs[1]);
+MPI_Isend(top_real,  n, MPI_DOUBLE, up,   101, comm, &reqs[2]);
+MPI_Isend(bot_real,  n, MPI_DOUBLE, down, 100, comm, &reqs[3]);
+
+// Overlap region: independent interior work (does not need ghost rows)
+for (int i = 2; i < local_rows - 2; ++i) {
+    update_row(i);
+}
+
+// Ensure communication completed before boundary update
+MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE);
+update_row(1);               // depends on top_ghost
+update_row(local_rows - 2);  // depends on bot_ghost
+```
+
+Checklist for correct overlap:
+- post `Irecv` before `Isend` (safer matching pattern)
+- overlap only computation independent of incoming data
+- `Wait/Waitall` before reading ghost buffers or reusing send buffers
+
+---
+
 # Teaching Demo 5: Nonblocking Neighbor Exchange
 
 Use local code:
@@ -522,6 +583,183 @@ Stretch goals:
 4. Plot runtime and parallel efficiency.
 
 Deliverables: source, run script, timing table, scaling plot.
+
+---
+
+# Python MPI: `mpi4py` (Why It Matters)
+
+- Same distributed-memory model as C MPI, but in Python.
+- Great for rapid prototyping and algorithm exploration.
+- Common in scientific Python stacks (NumPy/SciPy).
+- Useful bridge for students who know Python first.
+
+Key point: concepts do not change, only syntax does.
+
+---
+
+# Python MPI: `mpi4py` Minimal Example
+
+```python
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+
+local = rank + 1
+total = comm.reduce(local, op=MPI.SUM, root=0)
+if rank == 0:
+    print("sum =", total, "from", size, "ranks")
+```
+
+Run:
+
+```bash
+mpiexec -n 4 python mpi4py_sum.py
+```
+
+---
+
+# `mpi4py` API Map (Cheat Sheet)
+
+```python
+from mpi4py import MPI
+
+# Runtime / environment
+MPI.Get_version()
+MPI.Get_processor_name()
+MPI.Wtime()
+MPI.Wtick()
+MPI.Finalize()
+
+# Communicators and process info
+comm = MPI.COMM_WORLD
+comm.Get_rank(); comm.Get_size()
+comm.Barrier()
+sub = comm.Split(color=rank % 2, key=rank)
+dup = comm.Dup()
+
+# Point-to-point (Python object and buffer forms)
+comm.send(obj, dest=1, tag=0)
+obj = comm.recv(source=0, tag=0)
+req = comm.isend(obj, dest=1); req.wait()
+req = comm.irecv(source=0); obj = req.wait()
+comm.Send([buf, MPI.DOUBLE], dest=1, tag=0)
+comm.Recv([buf, MPI.DOUBLE], source=0, tag=0)
+
+# Collectives
+comm.bcast(obj, root=0)
+comm.scatter(list_or_seq, root=0)
+comm.gather(obj, root=0)
+comm.allgather(obj)
+comm.reduce(local, op=MPI.SUM, root=0)
+comm.allreduce(local, op=MPI.SUM)
+comm.Allreduce([sendbuf, MPI.DOUBLE], [recvbuf, MPI.DOUBLE], op=MPI.SUM)
+
+# Groups / topology / derived datatypes
+grp = comm.Get_group()
+cart = comm.Create_cart(dims=[2, 2], periods=[False, False], reorder=True)
+dtype = MPI.DOUBLE.Create_contiguous(4); dtype.Commit()
+
+# One-sided RMA (windows)
+win = MPI.Win.Create(memory, disp_unit=8, comm=comm)
+win.Fence()
+win.Put([src, MPI.DOUBLE], target_rank=1)
+win.Get([dst, MPI.DOUBLE], target_rank=1)
+win.Free()
+
+# Parallel I/O
+fh = MPI.File.Open(comm, "out.bin", MPI.MODE_CREATE | MPI.MODE_WRONLY)
+fh.Write_at_all(offset, buf)
+fh.Close()
+```
+
+Practical note: `mpi4py` has both object-level methods (`send/recv`) and high-performance buffer methods (`Send/Recv`, `Allreduce`) for NumPy arrays.
+
+---
+
+# Deep Learning Distributed: `torch.distributed` (Concepts)
+
+- Backend choices: `nccl` (GPU), `gloo` (CPU/general), `mpi` (optional).
+- Common workflow:
+  1. initialize process group
+  2. map rank to device
+  3. run model in DDP
+  4. synchronize gradients with all-reduce
+- Communication costs strongly affect scaling efficiency.
+
+Connection to MPI lecture: collectives (`all_reduce`, `broadcast`, barriers) are the same core ideas.
+
+---
+
+# LLM Pipeline + Tensor Parallelism: Communication Groups
+
+Example setup: 8 GPUs, 2 pipeline stages, 4-way tensor parallel
+
+- Tensor-parallel groups (within each stage):
+  - stage 0 TP: `[0,1,2,3]`
+  - stage 1 TP: `[4,5,6,7]`
+- Pipeline groups (between adjacent stages, per TP lane):
+  - lane 0: `[0,4]`
+  - lane 1: `[1,5]`
+  - lane 2: `[2,6]`
+  - lane 3: `[3,7]`
+
+Communication pattern:
+1. tensor collectives (`all_reduce` / `all_gather` / `reduce_scatter`) inside TP groups.
+2. `send/recv` activations + gradients across pipeline groups.
+
+Key idea: no data-parallel group in this layout.
+
+![LLM pipeline + tensor parallel communication groups](assets/llm_pipeline_tensor_parallel_schematic.svg)
+
+---
+
+# Group Creation (PyTorch Example: TP + PP)
+
+```python
+import torch.distributed as dist
+
+# Example rank layout (8 GPUs)
+tp_groups   = [[0,1,2,3], [4,5,6,7]]    # per-stage tensor groups
+pipe_groups = [[0,4], [1,5], [2,6], [3,7]]  # per-lane pipeline groups
+
+tp_pg   = [dist.new_group(ranks=g) for g in tp_groups]
+pipe_pg = [dist.new_group(ranks=g) for g in pipe_groups]
+
+# Tensor-parallel sync example (inside each stage)
+dist.all_reduce(partial_out, op=dist.ReduceOp.SUM, group=tp_pg[stage_id])
+
+# Pipeline send/recv happens across pipe_pg[lane_id]
+# (framework handles most details in real systems)
+```
+
+Practical warning: wrong group membership causes hangs or mismatched collectives.
+
+---
+
+# `torch.distributed` Minimal Pattern (DDP Skeleton)
+
+```python
+import os
+import torch
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+dist.init_process_group(backend="nccl")
+rank = dist.get_rank()
+local_rank = int(os.environ["LOCAL_RANK"])
+torch.cuda.set_device(local_rank)
+
+model = MyModel().cuda(local_rank)
+model = DDP(model, device_ids=[local_rank])
+```
+
+Typical launch:
+
+```bash
+torchrun --nproc_per_node=4 train.py
+```
 
 ---
 

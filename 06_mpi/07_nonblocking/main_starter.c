@@ -1,6 +1,5 @@
 #include <mpi.h>
 #include <stdio.h>
-#include <string.h>
 
 int main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
@@ -15,11 +14,9 @@ int main(int argc, char **argv) {
     int send_right = rank;
     int recv_left = -1;
 
-    MPI_Request reqs[2];
-    MPI_Irecv(&recv_left, 1, MPI_INT, left, 0, MPI_COMM_WORLD, &reqs[0]);
-    MPI_Isend(&send_right, 1, MPI_INT, right, 0, MPI_COMM_WORLD, &reqs[1]);
-    MPI_Waitall(2, reqs, MPI_STATUSES_IGNORE);
-
+    // each rank sends its rank to the right and receives from the left
+    // please implemnent the communication here: 
+    //
     printf("rank %d received %d from left neighbor %d\n", rank, recv_left, left);
 
     MPI_Finalize();
