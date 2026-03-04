@@ -12,6 +12,7 @@ This module mirrors the style of `05_openmp`: small, focused examples from basic
 - `06_pi_reduce/` - numerical pi integration with distributed reduction.
 - `07_nonblocking/` - neighbor exchange with `MPI_Isend`/`MPI_Irecv`.
 - `08_allreduce/` - global L2 norm with `MPI_Allreduce`.
+- `09_inner_product_collective/` - inner product exercise using `Scatter` + `Reduce`.
 
 ## Build
 In any subfolder:
@@ -45,8 +46,13 @@ mpiexec -n 8 ./app 50000000
 6. `06_pi_reduce`
 7. `07_nonblocking`
 8. `08_allreduce`
+9. `09_inner_product_collective`
 
 ## Notes
 - Use one rank first (`-n 1`) to validate basics, then scale up.
 - Many examples are easiest to inspect with `-n 2` or `-n 4`.
 - On clusters, run these in interactive or batch jobs via PBS.
+
+## Assignments
+- `assignments/01_injection_bandwidth/` - multi-rank injection bandwidth on 2 nodes.
+- `assignments/02_matvec_strong_scaling/` - MPI matvec with row decomposition and strong scaling (`1,2,4,8`).

@@ -1,7 +1,7 @@
 CC ?= mpicc
 CFLAGS ?= -O3 -std=c11 -Wall -Wextra
 
-APPS := bcast scatter gather reduce
+APPS := bcast scatter gather reduce reduce_scatter
 
 all: $(APPS)
 
@@ -15,6 +15,9 @@ gather: gather.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 reduce: reduce.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+reduce_scatter: reduce_scatter.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:

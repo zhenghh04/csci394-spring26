@@ -55,3 +55,13 @@ Stretch goals:
 - sweep message sizes from 1 KiB to 64 MiB
 - plot bandwidth vs message size
 - compare one-node vs two-node results
+
+## Pairwise Multi-Lane Ping-Pong Schematic (Homework assignment)
+
+For half-to-half pair testing (`main_pairs.c`), first-half ranks send to second-half counterparts and get replies back:
+- sender-side partner rule: `partner = rank + half` for `rank < half`
+- receiver-side partner rule: `partner = rank - half` for `rank >= half`
+
+This creates concurrent lanes that can approximate aggregate injection bandwidth across multiple NIC paths.
+
+![Half-to-half ping-pong schematic](./ping_pong_pairs_schematic.svg)
