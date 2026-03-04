@@ -31,9 +31,9 @@ This folder contains two MPI assignments that build core performance-engineering
 ## Combined Deliverables Checklist
 1. Assignment 01 source + build files + 3 site scripts (Crux/Aurora/Polaris) + raw logs + report.
 2. Assignment 02 source + build files + run script + timing table + scaling plot.
-3. Short comparison paragraph across both assignments describing communication/computation tradeoffs and scaling limits.
+3. Please add what you learned from the results. 
+4. Upload everything on Canvas
 
 ## Notes
 1. Exclude warmup iterations from measured performance metrics in both assignments.
 2. Keep all experiment scripts and raw logs reproducible.
-3. Record exact run parameters (`nodes`, `ranks`, `message size`, `iters`, `warmup`, repeats).
