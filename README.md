@@ -23,6 +23,7 @@ This github repo contains example codes that is used in CSCI 394 - High Performa
 - [04_benchmarks](04_benchmarks) - HPL, file-per-rank I/O, and MPI ping-pong tests.
 - [05_openmp](05_openmp) - OpenMP examples from basic to intermediate.
 - [06_mpi](06_mpi) - MPI hands-on C examples from hello world to collectives and reductions.
+- [07_gpu](07_gpu) - GPU architecture and OpenACC examples for Chapter 16 and 17.
 
 ------
 ## Getting started
