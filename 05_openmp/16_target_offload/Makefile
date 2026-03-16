@@ -5,7 +5,7 @@ CFLAGS ?= -O2 -Wall -Wextra
 LDFLAGS ?=
 LDLIBS ?=
 CC_VERSION_LINE := $(shell $(CC) --version 2>/dev/null | head -n 1)
-IS_NVHPC := $(findstring NVIDIA,$(CC_VERSION_LINE))
+IS_NVHPC := 1
 CC_BASENAME := $(notdir $(CC))
 
 # Optional target-offload flags (set from command line if needed)
