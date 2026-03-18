@@ -16,6 +16,17 @@ Build:
 make
 ```
 
+If your driver is older than the CUDA toolkit, build for the exact GPU target:
+
+```bash
+make CUDA_ARCH=sm_80
+```
+
+Common examples:
+
+- `sm_80` for A100
+- `sm_90` for H100
+
 Run:
 
 ```bash
