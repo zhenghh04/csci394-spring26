@@ -10,12 +10,14 @@ Concepts:
 - `cudaMalloc` and `cudaMemcpy`
 - simple GPU elementwise multiply
 - correctness check against a CPU reference
+- CPU vs GPU timing comparison
 
 Teaching note:
 
 - this version keeps the reduction simple for class discussion
 - the GPU computes the elementwise products
 - the host sums the temporary product array
+- timing separates CPU time from GPU transfer and kernel time
 
 Build:
 
