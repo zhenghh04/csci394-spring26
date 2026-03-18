@@ -27,7 +27,7 @@ Homework set for these examples:
 - `13_ai_conv2d/` – Conv2D OpenMP example.
 - `14_simd_completion/` – SIMD vs threads benchmark + thread completion imbalance study.
 - `15_depend/` – minimal OpenMP task dependency (`depend`) pipeline example.
-- `16_target_offload/` – minimal OpenMP `target` offloading example (AXPY).
+- `../07_gpu/openmp/16_target_offload/` – minimal OpenMP `target` offloading example (AXPY), now grouped with GPU examples.
 
 
 ## Dependencies (OpenMP runtime)
