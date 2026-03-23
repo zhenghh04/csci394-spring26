@@ -10,6 +10,7 @@ Concepts:
 - per-thread work over integration points
 - `cudaMalloc` and `cudaMemcpy`
 - correctness check against a CPU reference
+- CPU and GPU timing comparison with reported speedup
 
 Build:
 

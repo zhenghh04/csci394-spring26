@@ -1,4 +1,5 @@
 #include <cmath>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 
@@ -62,17 +63,34 @@ int main(int argc, char **argv) {
     }
 
     double gpu_sum = 0.0;
+    auto gpu_t0 = std::chrono::steady_clock::now();
+    pi_midpoint_kernel<<<num_blocks, threads_per_block>>>(n, dx, device_terms);
+    if (!check_cuda(cudaGetLastError(), "timed kernel launch") ||
+        !check_cuda(cudaDeviceSynchronize(), "timed cudaDeviceSynchronize") ||
+        !check_cuda(cudaMemcpy(host_terms, device_terms, bytes, cudaMemcpyDeviceToHost),
+                    "timed cudaMemcpy D2H")) {
+        cudaFree(device_terms);
+        std::free(host_terms);
+        return 1;
+    }
+    auto gpu_t1 = std::chrono::steady_clock::now();
     for (int i = 0; i < n; i++) {
         gpu_sum += host_terms[i];
     }
     double pi_gpu = gpu_sum * dx;
+    double gpu_time_s =
+        std::chrono::duration<double>(gpu_t1 - gpu_t0).count();
 
     double cpu_sum = 0.0;
+    auto cpu_t0 = std::chrono::steady_clock::now();
     for (int i = 0; i < n; i++) {
         double x = ((double)i + 0.5) * dx;
         cpu_sum += 4.0 / (1.0 + x * x);
     }
+    auto cpu_t1 = std::chrono::steady_clock::now();
     double pi_cpu = cpu_sum * dx;
+    double cpu_time_s =
+        std::chrono::duration<double>(cpu_t1 - cpu_t0).count();
     double abs_err_cpu = std::fabs(pi_gpu - pi_cpu);
     double abs_err_true = std::fabs(pi_gpu - std::acos(-1.0));
 
@@ -81,6 +99,11 @@ int main(int argc, char **argv) {
                 n, threads_per_block, num_blocks);
     std::printf("pi_gpu=%.15f\n", pi_gpu);
     std::printf("pi_cpu=%.15f\n", pi_cpu);
+    std::printf("gpu_time_s=%.6f\n", gpu_time_s);
+    std::printf("cpu_time_s=%.6f\n", cpu_time_s);
+    if (gpu_time_s > 0.0) {
+        std::printf("speedup_cpu_vs_gpu=%.3f\n", cpu_time_s / gpu_time_s);
+    }
     std::printf("abs_err_vs_cpu=%.6e\n", abs_err_cpu);
     std::printf("abs_err_vs_true_pi=%.6e\n", abs_err_true);
 
