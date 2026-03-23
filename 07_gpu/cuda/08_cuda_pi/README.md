@@ -8,7 +8,8 @@ Concepts:
 
 - 1D CUDA kernel launch
 - per-thread work over integration points
-- `cudaMalloc` and `cudaMemcpy`
+- GPU reduction so only the final sum is copied back to the host
+- `cudaMalloc` and minimal `cudaMemcpy`
 - correctness check against a CPU reference
 - CPU and GPU timing comparison with reported speedup
 
@@ -35,3 +36,4 @@ Arguments:
 
 - `num_intervals` default: `1048576`
 - `threads_per_block` default: `256`
+- `threads_per_block` should be a power of two for the reduction

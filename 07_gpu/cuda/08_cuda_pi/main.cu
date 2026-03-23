@@ -5,19 +5,44 @@
 
 #include <cuda_runtime.h>
 
-static int check_cuda(cudaError_t err, const char *what) {
-    if (err != cudaSuccess) {
-        std::fprintf(stderr, "%s failed: %s\n", what, cudaGetErrorString(err));
-        return 0;
-    }
-    return 1;
-}
-
-__global__ void pi_midpoint_kernel(int n, double dx, double *out_terms) {
+__global__ void pi_midpoint_reduce_kernel(int n, double dx, double *out_partial) {
+    extern __shared__ double shared[];
     int gid = blockIdx.x * blockDim.x + threadIdx.x;
+    double value = 0.0;
     if (gid < n) {
         double x = ((double)gid + 0.5) * dx;
-        out_terms[gid] = 4.0 / (1.0 + x * x);
+        value = 4.0 / (1.0 + x * x);
+    }
+    shared[threadIdx.x] = value;
+    __syncthreads();
+
+    for (int stride = blockDim.x / 2; stride > 0; stride /= 2) {
+        if (threadIdx.x < stride) {
+            shared[threadIdx.x] += shared[threadIdx.x + stride];
+        }
+        __syncthreads();
+    }
+
+    if (threadIdx.x == 0) {
+        out_partial[blockIdx.x] = shared[0];
+    }
+}
+
+__global__ void reduce_sum_kernel(const double *in, double *out, int n) {
+    extern __shared__ double shared[];
+    int gid = blockIdx.x * blockDim.x + threadIdx.x;
+    shared[threadIdx.x] = (gid < n) ? in[gid] : 0.0;
+    __syncthreads();
+
+    for (int stride = blockDim.x / 2; stride > 0; stride /= 2) {
+        if (threadIdx.x < stride) {
+            shared[threadIdx.x] += shared[threadIdx.x + stride];
+        }
+        __syncthreads();
+    }
+
+    if (threadIdx.x == 0) {
+        out[blockIdx.x] = shared[0];
     }
 }
 
@@ -37,46 +62,112 @@ int main(int argc, char **argv) {
     }
 
     double dx = 1.0 / (double)n;
-    size_t bytes = (size_t)n * sizeof(double);
-
-    double *host_terms = (double *)std::malloc(bytes);
-    if (!host_terms) {
-        std::fprintf(stderr, "host allocation failed\n");
-        return 1;
-    }
-
-    double *device_terms = nullptr;
-    if (!check_cuda(cudaMalloc((void **)&device_terms, bytes), "cudaMalloc")) {
-        std::free(host_terms);
+    if ((threads_per_block & (threads_per_block - 1)) != 0) {
+        std::fprintf(stderr, "threads_per_block must be a power of two\n");
         return 1;
     }
 
     int num_blocks = (n + threads_per_block - 1) / threads_per_block;
-    pi_midpoint_kernel<<<num_blocks, threads_per_block>>>(n, dx, device_terms);
-    if (!check_cuda(cudaGetLastError(), "kernel launch") ||
-        !check_cuda(cudaDeviceSynchronize(), "cudaDeviceSynchronize") ||
-        !check_cuda(cudaMemcpy(host_terms, device_terms, bytes, cudaMemcpyDeviceToHost),
-                    "cudaMemcpy D2H")) {
-        cudaFree(device_terms);
-        std::free(host_terms);
+    size_t partial_bytes = (size_t)num_blocks * sizeof(double);
+
+    double *device_partial_a = nullptr;
+    double *device_partial_b = nullptr;
+    cudaError_t cuda_status = cudaMalloc((void **)&device_partial_a, partial_bytes);
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "cudaMalloc device_partial_a failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        return 1;
+    }
+    cuda_status = cudaMalloc((void **)&device_partial_b, partial_bytes);
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "cudaMalloc device_partial_b failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        cudaFree(device_partial_a);
+        return 1;
+    }
+
+    pi_midpoint_reduce_kernel<<<num_blocks, threads_per_block,
+                                (size_t)threads_per_block * sizeof(double)>>>(
+        n, dx, device_partial_a);
+    cuda_status = cudaGetLastError();
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "warmup kernel launch failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        cudaFree(device_partial_a);
+        cudaFree(device_partial_b);
+        return 1;
+    }
+    cuda_status = cudaDeviceSynchronize();
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "warmup cudaDeviceSynchronize failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        cudaFree(device_partial_a);
+        cudaFree(device_partial_b);
         return 1;
     }
 
     double gpu_sum = 0.0;
     auto gpu_t0 = std::chrono::steady_clock::now();
-    pi_midpoint_kernel<<<num_blocks, threads_per_block>>>(n, dx, device_terms);
-    if (!check_cuda(cudaGetLastError(), "timed kernel launch") ||
-        !check_cuda(cudaDeviceSynchronize(), "timed cudaDeviceSynchronize") ||
-        !check_cuda(cudaMemcpy(host_terms, device_terms, bytes, cudaMemcpyDeviceToHost),
-                    "timed cudaMemcpy D2H")) {
-        cudaFree(device_terms);
-        std::free(host_terms);
+    pi_midpoint_reduce_kernel<<<num_blocks, threads_per_block,
+                                (size_t)threads_per_block * sizeof(double)>>>(
+        n, dx, device_partial_a);
+    cuda_status = cudaGetLastError();
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "timed midpoint kernel launch failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        cudaFree(device_partial_a);
+        cudaFree(device_partial_b);
+        return 1;
+    }
+    cuda_status = cudaDeviceSynchronize();
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "timed midpoint cudaDeviceSynchronize failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        cudaFree(device_partial_a);
+        cudaFree(device_partial_b);
+        return 1;
+    }
+
+    int current_n = num_blocks;
+    double *current_in = device_partial_a;
+    double *current_out = device_partial_b;
+    while (current_n > 1) {
+        int reduction_blocks = (current_n + threads_per_block - 1) / threads_per_block;
+        reduce_sum_kernel<<<reduction_blocks, threads_per_block,
+                            (size_t)threads_per_block * sizeof(double)>>>(
+            current_in, current_out, current_n);
+        cuda_status = cudaGetLastError();
+        if (cuda_status != cudaSuccess) {
+            std::fprintf(stderr, "reduction kernel launch failed: %s\n",
+                         cudaGetErrorString(cuda_status));
+            cudaFree(device_partial_a);
+            cudaFree(device_partial_b);
+            return 1;
+        }
+        cuda_status = cudaDeviceSynchronize();
+        if (cuda_status != cudaSuccess) {
+            std::fprintf(stderr, "reduction cudaDeviceSynchronize failed: %s\n",
+                         cudaGetErrorString(cuda_status));
+            cudaFree(device_partial_a);
+            cudaFree(device_partial_b);
+            return 1;
+        }
+        current_n = reduction_blocks;
+        double *tmp = current_in;
+        current_in = current_out;
+        current_out = tmp;
+    }
+
+    cuda_status = cudaMemcpy(&gpu_sum, current_in, sizeof(double),
+                             cudaMemcpyDeviceToHost);
+    if (cuda_status != cudaSuccess) {
+        std::fprintf(stderr, "cudaMemcpy final sum D2H failed: %s\n",
+                     cudaGetErrorString(cuda_status));
+        cudaFree(device_partial_a);
+        cudaFree(device_partial_b);
         return 1;
     }
     auto gpu_t1 = std::chrono::steady_clock::now();
-    for (int i = 0; i < n; i++) {
-        gpu_sum += host_terms[i];
-    }
     double pi_gpu = gpu_sum * dx;
     double gpu_time_s =
         std::chrono::duration<double>(gpu_t1 - gpu_t0).count();
@@ -107,7 +198,7 @@ int main(int argc, char **argv) {
     std::printf("abs_err_vs_cpu=%.6e\n", abs_err_cpu);
     std::printf("abs_err_vs_true_pi=%.6e\n", abs_err_true);
 
-    cudaFree(device_terms);
-    std::free(host_terms);
+    cudaFree(device_partial_a);
+    cudaFree(device_partial_b);
     return abs_err_cpu > 1.0e-12;
 }
