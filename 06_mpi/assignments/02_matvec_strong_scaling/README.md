@@ -35,7 +35,7 @@ make
 
 ## Single Run
 ```bash
-mpiexec -n 8 --ppn 8 ./main_mpi.x 128000 5 1
+mpiexec -n 8 --ppn 8 ./main_mpi.x 64000 5 1
 ```
 
 Arguments:
@@ -44,7 +44,7 @@ Arguments:
 - `warmup`: warmup iterations (excluded from measured timing)
 
 Parameters to script:
-1. `n` (please set ``128000`` for the  experiments)
+1. `n` (please set ``64000`` for the  experiments)
 2. `iters` (default `5`)
 3. `warmup` (default `1`)
 
