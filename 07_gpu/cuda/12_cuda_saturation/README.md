@@ -77,16 +77,18 @@ What students should learn:
 Sample output on an NVIDIA A100 80GB PCIe:
 
 ```text
+CUDA saturation sweep
 device=NVIDIA A100 80GB PCIe
 SMs=108 threads_per_block=256 repeats=200000
+theoretical_fp32_peak_gflops=19491.840
 warmup_blocks=108 (excluded from timing)
-    blocks    blocks/SM      time_ms        GFLOP/s
-        27         0.25        0.652       4238.618
-        54         0.50        0.655       8444.097
-       108         1.00        0.653      16925.413
-       216         2.00        1.220      18126.984
-       432         4.00        2.368      18679.061
-       864         8.00        4.663      18972.593
+    blocks    blocks/SM      time_ms        GFLOP/s      %peak
+        27         0.25        0.649       4258.675      21.85
+        54         0.50        0.650       8510.219      43.66
+       108         1.00        0.648      17060.769      87.53
+       216         2.00        1.210      18276.044      93.76
+       432         4.00        2.345      18861.540      96.77
+       864         8.00        4.649      19031.885      97.64
 ```
 
 How to interpret this sample:
