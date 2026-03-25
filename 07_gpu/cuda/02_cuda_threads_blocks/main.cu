@@ -2,14 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int check_cuda(cudaError_t err, const char *what) {
-    if (err != cudaSuccess) {
-        fprintf(stderr, "%s failed: %s\n", what, cudaGetErrorString(err));
-        return 0;
-    }
-    return 1;
-}
-
 __global__ void map_threads_kernel(int n, int *out_global, int *out_block,
                                    int *out_thread) {
     int gid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -50,42 +42,19 @@ int main(int argc, char **argv) {
     int *d_global = NULL;
     int *d_block = NULL;
     int *d_thread = NULL;
-    if (!check_cuda(cudaMalloc((void **)&d_global, (size_t)n * sizeof(*d_global)),
-                    "cudaMalloc d_global") ||
-        !check_cuda(cudaMalloc((void **)&d_block, (size_t)n * sizeof(*d_block)),
-                    "cudaMalloc d_block") ||
-        !check_cuda(cudaMalloc((void **)&d_thread, (size_t)n * sizeof(*d_thread)),
-                    "cudaMalloc d_thread")) {
-        cudaFree(d_global);
-        cudaFree(d_block);
-        cudaFree(d_thread);
-        free(h_global);
-        free(h_block);
-        free(h_thread);
-        return 1;
-    }
+    cudaMalloc((void **)&d_global, (size_t)n * sizeof(*d_global));
+    cudaMalloc((void **)&d_block, (size_t)n * sizeof(*d_block));
+    cudaMalloc((void **)&d_thread, (size_t)n * sizeof(*d_thread));
 
     map_threads_kernel<<<num_blocks, threads_per_block>>>(n, d_global, d_block,
                                                           d_thread);
-    if (!check_cuda(cudaGetLastError(), "kernel launch") ||
-        !check_cuda(cudaDeviceSynchronize(), "cudaDeviceSynchronize") ||
-        !check_cuda(cudaMemcpy(h_global, d_global, (size_t)n * sizeof(*h_global),
-                               cudaMemcpyDeviceToHost),
-                    "cudaMemcpy h_global") ||
-        !check_cuda(cudaMemcpy(h_block, d_block, (size_t)n * sizeof(*h_block),
-                               cudaMemcpyDeviceToHost),
-                    "cudaMemcpy h_block") ||
-        !check_cuda(cudaMemcpy(h_thread, d_thread, (size_t)n * sizeof(*h_thread),
-                               cudaMemcpyDeviceToHost),
-                    "cudaMemcpy h_thread")) {
-        cudaFree(d_global);
-        cudaFree(d_block);
-        cudaFree(d_thread);
-        free(h_global);
-        free(h_block);
-        free(h_thread);
-        return 1;
-    }
+    cudaDeviceSynchronize();
+    cudaMemcpy(h_global, d_global, (size_t)n * sizeof(*h_global),
+               cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_block, d_block, (size_t)n * sizeof(*h_block),
+               cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_thread, d_thread, (size_t)n * sizeof(*h_thread),
+               cudaMemcpyDeviceToHost);
 
     printf("CUDA threads and blocks mapping\n");
     printf("N=%d threads_per_block=%d num_blocks=%d\n", n, threads_per_block,
