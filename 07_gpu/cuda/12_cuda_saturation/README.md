@@ -73,3 +73,25 @@ What students should learn:
 - `#blocks >= #SMs` is a useful starting rule, not a full saturation rule
 - one block per SM is often not enough for peak throughput
 - performance usually levels off after enough blocks are available
+
+Sample output on an NVIDIA A100 80GB PCIe:
+
+```text
+device=NVIDIA A100 80GB PCIe
+SMs=108 threads_per_block=256 repeats=200000
+warmup_blocks=108 (excluded from timing)
+    blocks    blocks/SM      time_ms        GFLOP/s
+        27         0.25        0.652       4238.618
+        54         0.50        0.655       8444.097
+       108         1.00        0.653      16925.413
+       216         2.00        1.220      18126.984
+       432         4.00        2.368      18679.061
+       864         8.00        4.663      18972.593
+```
+
+How to interpret this sample:
+
+- performance rises rapidly as the number of blocks approaches and then exceeds the SM count
+- `1.0 blocks/SM` is better than `0.25` or `0.50`, but it is still not the best point
+- the throughput begins to level off between `4.0` and `8.0 blocks/SM`
+- that plateau is the practical saturation point for this kernel on this GPU

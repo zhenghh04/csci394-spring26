@@ -37,6 +37,9 @@ int main(int argc, char **argv) {
     cudaDeviceProp prop{};
     cudaGetDeviceProperties(&prop, device);
     int sms = prop.multiProcessorCount;
+    double clock_hz = (double)prop.clockRate * 1000.0;
+    double fp32_per_sm = 64.0;
+    double theoretical_gflops = (double)sms * fp32_per_sm * 2.0 * clock_hz / 1.0e9;
 
     int sweep_blocks[] = {
         rounded_blocks(sms, 1, 4),
@@ -71,9 +74,10 @@ int main(int argc, char **argv) {
     std::printf("CUDA saturation sweep\n");
     std::printf("device=%s\n", prop.name);
     std::printf("SMs=%d threads_per_block=%d repeats=%d\n", sms, threads_per_block, repeats);
+    std::printf("theoretical_fp32_peak_gflops=%.3f\n", theoretical_gflops);
     std::printf("warmup_blocks=%d (excluded from timing)\n", warmup_blocks);
-    std::printf("%10s %12s %12s %14s\n",
-                "blocks", "blocks/SM", "time_ms", "GFLOP/s");
+    std::printf("%10s %12s %12s %14s %10s\n",
+                "blocks", "blocks/SM", "time_ms", "GFLOP/s", "%peak");
 
     for (int case_id = 0; case_id < num_cases; ++case_id) {
         int num_blocks = sweep_blocks[case_id];
@@ -89,12 +93,13 @@ int main(int argc, char **argv) {
 
         double flops = 2.0 * (double)total_threads * (double)repeats;
         double gflops = flops / ((double)ms * 1.0e6);
+        double pct_peak = 100.0 * gflops / theoretical_gflops;
 
         cudaMemcpy(host_out, device_out, total_threads * sizeof(float),
                    cudaMemcpyDeviceToHost);
 
-        std::printf("%10d %12.2f %12.3f %14.3f\n",
-                    num_blocks, (double)num_blocks / (double)sms, ms, gflops);
+        std::printf("%10d %12.2f %12.3f %14.3f %10.2f\n",
+                    num_blocks, (double)num_blocks / (double)sms, ms, gflops, pct_peak);
     }
 
     std::printf("\n");
