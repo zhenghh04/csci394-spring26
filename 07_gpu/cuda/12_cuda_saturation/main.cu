@@ -64,9 +64,14 @@ int main(int argc, char **argv) {
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
 
+    int warmup_blocks = rounded_blocks(sms, 1, 1);
+    saturation_kernel<<<warmup_blocks, threads_per_block>>>(device_out, repeats);
+    cudaDeviceSynchronize();
+
     std::printf("CUDA saturation sweep\n");
     std::printf("device=%s\n", prop.name);
     std::printf("SMs=%d threads_per_block=%d repeats=%d\n", sms, threads_per_block, repeats);
+    std::printf("warmup_blocks=%d (excluded from timing)\n", warmup_blocks);
     std::printf("%10s %12s %12s %14s\n",
                 "blocks", "blocks/SM", "time_ms", "GFLOP/s");
 
