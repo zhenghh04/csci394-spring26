@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420">
+  <defs>
+    <style>
+      .title { font: 700 24px sans-serif; fill: #1f2937; }
+      .label { font: 600 16px sans-serif; fill: #1f2937; }
+      .small { font: 500 13px sans-serif; fill: #374151; }
+      .box { fill: #dbeafe; stroke: #2563eb; stroke-width: 2; rx: 8; }
+      .sum { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; rx: 8; }
+      .final { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; rx: 8; }
+      .stage { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 1.5; rx: 10; }
+      .arrow { stroke: #6b7280; stroke-width: 2.5; fill: none; marker-end: url(#m); }
+      .connector { stroke: #94a3b8; stroke-width: 2; fill: none; marker-end: url(#m); }
+    </style>
+    <marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <text x="30" y="35" class="title">Shared-Memory Tree Reduction Within One CUDA Block</text>
+
+  <rect x="20" y="60" width="180" height="320" class="stage"/>
+  <rect x="230" y="60" width="180" height="320" class="stage"/>
+  <rect x="440" y="60" width="180" height="320" class="stage"/>
+  <rect x="650" y="60" width="140" height="320" class="stage"/>
+  <rect x="820" y="60" width="140" height="320" class="stage"/>
+
+  <text x="70" y="88" class="label">Stage 0</text>
+  <text x="248" y="88" class="label">Stage 1</text>
+  <text x="458" y="88" class="label">Stage 2</text>
+  <text x="668" y="88" class="label">Stage 3</text>
+  <text x="845" y="88" class="label">Output</text>
+
+  <text x="52" y="110" class="small">8 threads load 8 values</text>
+  <text x="260" y="110" class="small">stride = 4</text>
+  <text x="470" y="110" class="small">stride = 2</text>
+  <text x="680" y="110" class="small">stride = 1</text>
+  <text x="840" y="110" class="small">thread 0 writes</text>
+
+  <rect x="50" y="130" width="110" height="32" class="box"/><text x="84" y="151" class="label">x0y0</text>
+  <rect x="50" y="165" width="110" height="32" class="box"/><text x="84" y="186" class="label">x1y1</text>
+  <rect x="50" y="200" width="110" height="32" class="box"/><text x="84" y="221" class="label">x2y2</text>
+  <rect x="50" y="235" width="110" height="32" class="box"/><text x="84" y="256" class="label">x3y3</text>
+  <rect x="50" y="270" width="110" height="32" class="box"/><text x="84" y="291" class="label">x4y4</text>
+  <rect x="50" y="305" width="110" height="32" class="box"/><text x="84" y="326" class="label">x5y5</text>
+  <rect x="50" y="340" width="110" height="32" class="box"/><text x="84" y="361" class="label">x6y6</text>
+  <rect x="50" y="375" width="110" height="32" class="box"/><text x="84" y="396" class="label">x7y7</text>
+
+  <rect x="260" y="148" width="120" height="36" class="sum"/><text x="282" y="171" class="label">x0y0+x4y4</text>
+  <rect x="260" y="218" width="120" height="36" class="sum"/><text x="282" y="241" class="label">x1y1+x5y5</text>
+  <rect x="260" y="288" width="120" height="36" class="sum"/><text x="282" y="311" class="label">x2y2+x6y6</text>
+  <rect x="260" y="358" width="120" height="36" class="sum"/><text x="282" y="381" class="label">x3y3+x7y7</text>
+
+  <rect x="470" y="183" width="120" height="42" class="sum"/><text x="490" y="209" class="label">(0+4)+(2+6)</text>
+  <rect x="470" y="303" width="120" height="42" class="sum"/><text x="490" y="329" class="label">(1+5)+(3+7)</text>
+
+  <rect x="675" y="242" width="95" height="44" class="final"/><text x="694" y="270" class="label">block sum</text>
+
+  <rect x="845" y="242" width="95" height="44" class="final"/><text x="858" y="270" class="label">partial[b]</text>
+
+  <path d="M160 146 L258 166" class="connector"/>
+  <path d="M160 286 L258 166" class="connector"/>
+  <path d="M160 181 L258 236" class="connector"/>
+  <path d="M160 321 L258 236" class="connector"/>
+  <path d="M160 216 L258 306" class="connector"/>
+  <path d="M160 356 L258 306" class="connector"/>
+  <path d="M160 251 L258 376" class="connector"/>
+  <path d="M160 391 L258 376" class="connector"/>
+
+  <path d="M380 166 L468 204" class="connector"/>
+  <path d="M380 306 L468 204" class="connector"/>
+  <path d="M380 236 L468 324" class="connector"/>
+  <path d="M380 376 L468 324" class="connector"/>
+
+  <path d="M590 204 L673 264" class="connector"/>
+  <path d="M590 324 L673 264" class="connector"/>
+  <path d="M770 264 L843 264" class="arrow"/>
+
+  <text x="32" y="408" class="small">Inside the kernel, shared memory starts with one value per thread. Each loop halves the number of active threads until thread 0 holds the block total.</text>
+</svg>

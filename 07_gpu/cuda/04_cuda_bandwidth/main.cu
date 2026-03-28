@@ -3,6 +3,16 @@
 
 #include <cuda_runtime.h>
 
+#define CUDA_CHECK(call)                                                      \
+    do {                                                                      \
+        cudaError_t err__ = (call);                                           \
+        if (err__ != cudaSuccess) {                                           \
+            std::fprintf(stderr, "%s:%d: %s failed: %s\n", __FILE__,          \
+                         __LINE__, #call, cudaGetErrorString(err__));         \
+            return 1;                                                         \
+        }                                                                     \
+    } while (0)
+
 int main(int argc, char **argv) {
     int n = 1 << 24;
     int iters = 10;
@@ -21,39 +31,39 @@ int main(int argc, char **argv) {
     float *host = nullptr;
     float *device = nullptr;
 
-    cudaMallocHost((void **)&host, bytes);
-    cudaMalloc((void **)&device, bytes);
+    CUDA_CHECK(cudaMallocHost((void **)&host, bytes));
+    CUDA_CHECK(cudaMalloc((void **)&device, bytes));
 
     for (int i = 0; i < n; i++) {
         host[i] = (float)(i % 100) * 0.5f;
     }
 
     cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
+    CUDA_CHECK(cudaEventCreate(&start));
+    CUDA_CHECK(cudaEventCreate(&stop));
 
-    cudaMemcpy(device, host, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(host, device, bytes, cudaMemcpyDeviceToHost);
+    CUDA_CHECK(cudaMemcpy(device, host, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(host, device, bytes, cudaMemcpyDeviceToHost));
 
-    cudaEventRecord(start);
+    CUDA_CHECK(cudaEventRecord(start));
     for (int iter = 0; iter < iters; iter++) {
-        cudaMemcpy(device, host, bytes, cudaMemcpyHostToDevice);
+        CUDA_CHECK(cudaMemcpy(device, host, bytes, cudaMemcpyHostToDevice));
     }
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
+    CUDA_CHECK(cudaEventRecord(stop));
+    CUDA_CHECK(cudaEventSynchronize(stop));
 
     float h2d_ms = 0.0f;
-    cudaEventElapsedTime(&h2d_ms, start, stop);
+    CUDA_CHECK(cudaEventElapsedTime(&h2d_ms, start, stop));
 
-    cudaEventRecord(start);
+    CUDA_CHECK(cudaEventRecord(start));
     for (int iter = 0; iter < iters; iter++) {
-        cudaMemcpy(host, device, bytes, cudaMemcpyDeviceToHost);
+        CUDA_CHECK(cudaMemcpy(host, device, bytes, cudaMemcpyDeviceToHost));
     }
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
+    CUDA_CHECK(cudaEventRecord(stop));
+    CUDA_CHECK(cudaEventSynchronize(stop));
 
     float d2h_ms = 0.0f;
-    cudaEventElapsedTime(&d2h_ms, start, stop);
+    CUDA_CHECK(cudaEventElapsedTime(&d2h_ms, start, stop));
 
     double total_gb = ((double)bytes * (double)iters) / 1.0e9;
     double h2d_bw = total_gb / ((double)h2d_ms / 1.0e3);
@@ -64,9 +74,9 @@ int main(int argc, char **argv) {
     std::printf("H2D time=%.3f ms  bandwidth=%.3f GB/s\n", h2d_ms, h2d_bw);
     std::printf("D2H time=%.3f ms  bandwidth=%.3f GB/s\n", d2h_ms, d2h_bw);
 
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
-    cudaFree(device);
-    cudaFreeHost(host);
+    CUDA_CHECK(cudaEventDestroy(start));
+    CUDA_CHECK(cudaEventDestroy(stop));
+    CUDA_CHECK(cudaFree(device));
+    CUDA_CHECK(cudaFreeHost(host));
     return 0;
 }

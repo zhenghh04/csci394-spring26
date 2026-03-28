@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="460" viewBox="0 0 980 460">
+  <defs>
+    <style>
+      .title { font: 700 24px sans-serif; fill: #1f2937; }
+      .label { font: 600 16px sans-serif; fill: #1f2937; }
+      .small { font: 500 13px sans-serif; fill: #475569; }
+      .host { fill: #e0f2fe; stroke: #0284c7; stroke-width: 2; rx: 10; }
+      .gpu { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; rx: 10; }
+      .sum { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; rx: 10; }
+      .arrow { stroke: #64748b; stroke-width: 2.5; fill: none; marker-end: url(#m); }
+    </style>
+    <marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text x="28" y="34" class="title">Partition the Vectors Across GPUs, Then Combine Partial Dot Products</text>
+
+  <rect x="40" y="92" width="220" height="245" class="host"/>
+  <text x="120" y="110" class="label">Host Arrays</text>
+  <text x="70" y="155" class="small">x[0:N], y[0:N]</text>
+  <rect x="70" y="185" width="160" height="30" fill="#bae6fd" stroke="#0284c7"/>
+  <rect x="70" y="215" width="160" height="30" fill="#7dd3fc" stroke="#0284c7"/>
+  <rect x="70" y="245" width="160" height="30" fill="#38bdf8" stroke="#0284c7"/>
+  <rect x="70" y="275" width="160" height="30" fill="#0ea5e9" stroke="#0284c7"/>
+  <text x="88" y="205" class="small">chunk 0</text>
+  <text x="88" y="235" class="small">chunk 1</text>
+  <text x="88" y="265" class="small">chunk 2</text>
+  <text x="88" y="295" class="small">...</text>
+
+  <rect x="350" y="72" width="220" height="92" class="gpu"/>
+  <rect x="350" y="186" width="220" height="92" class="gpu"/>
+  <rect x="350" y="300" width="220" height="92" class="gpu"/>
+  <text x="430" y="110" class="label">GPU 0</text>
+  <text x="430" y="224" class="label">GPU 1</text>
+  <text x="430" y="338" class="label">GPU g</text>
+  <text x="382" y="138" class="small">copy chunk 0</text>
+  <text x="382" y="156" class="small">compute x[i] * y[i]</text>
+  <text x="382" y="174" class="small">local partial sum</text>
+  <text x="382" y="252" class="small">copy chunk 1</text>
+  <text x="382" y="270" class="small">compute x[i] * y[i]</text>
+  <text x="382" y="288" class="small">local partial sum</text>
+  <text x="382" y="366" class="small">copy chunk g</text>
+  <text x="382" y="384" class="small">compute x[i] * y[i]</text>
+  <text x="382" y="402" class="small">local partial sum</text>
+
+  <rect x="710" y="165" width="200" height="140" class="sum"/>
+  <text x="755" y="176" class="label">Host Combine Step</text>
+  <text x="736" y="220" class="small">dot = partial_0</text>
+  <text x="736" y="244" class="small">    + partial_1</text>
+  <text x="736" y="268" class="small">    + ...</text>
+  <text x="736" y="292" class="small">    + partial_g</text>
+
+  <path d="M230 200 L348 118" class="arrow"/>
+  <path d="M230 230 L348 232" class="arrow"/>
+  <path d="M230 260 L348 346" class="arrow"/>
+
+  <path d="M570 118 L708 200" class="arrow"/>
+  <path d="M570 232 L708 235" class="arrow"/>
+  <path d="M570 346 L708 270" class="arrow"/>
+
+  <text x="48" y="432" class="small">Each GPU works on a disjoint chunk of the vectors.</text>
+  <text x="48" y="450" class="small">The host partitions the data and adds the per-GPU partial sums.</text>
+</svg>

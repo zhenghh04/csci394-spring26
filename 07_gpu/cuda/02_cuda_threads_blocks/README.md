@@ -26,6 +26,7 @@ Common examples:
 
 - `sm_80` for A100
 - `sm_90` for H100
+- `sm_86` for many RTX 30-series cards
 
 Run:
 

@@ -19,6 +19,12 @@ Teaching note:
 - the host sums the temporary product array
 - timing separates CPU time from GPU transfer and kernel time
 
+Interpretation note:
+
+- if GPU total time is slower than CPU time for small `N`, that is expected
+- this example is meant to show launch and transfer costs before introducing
+  optimized reductions
+
 Build:
 
 ```bash

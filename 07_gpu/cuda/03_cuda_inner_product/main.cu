@@ -5,6 +5,16 @@
 
 #include <cuda_runtime.h>
 
+#define CUDA_CHECK(call)                                                      \
+    do {                                                                      \
+        cudaError_t err__ = (call);                                           \
+        if (err__ != cudaSuccess) {                                           \
+            std::fprintf(stderr, "%s:%d: %s failed: %s\n", __FILE__,          \
+                         __LINE__, #call, cudaGetErrorString(err__));         \
+            return 1;                                                         \
+        }                                                                     \
+    } while (0)
+
 __global__ void pointwise_product_kernel(const double *x, const double *y,
                                          double *prod, int n) {
     int gid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -52,40 +62,41 @@ int main(int argc, char **argv) {
     double *device_x = nullptr;
     double *device_y = nullptr;
     double *device_prod = nullptr;
-    cudaMalloc((void **)&device_x, bytes);
-    cudaMalloc((void **)&device_y, bytes);
-    cudaMalloc((void **)&device_prod, bytes);
+    CUDA_CHECK(cudaMalloc((void **)&device_x, bytes));
+    CUDA_CHECK(cudaMalloc((void **)&device_y, bytes));
+    CUDA_CHECK(cudaMalloc((void **)&device_prod, bytes));
 
     cudaEvent_t start_total, stop_total, start_h2d, stop_h2d, start_kernel,
         stop_kernel, start_d2h, stop_d2h;
-    cudaEventCreate(&start_total);
-    cudaEventCreate(&stop_total);
-    cudaEventCreate(&start_h2d);
-    cudaEventCreate(&stop_h2d);
-    cudaEventCreate(&start_kernel);
-    cudaEventCreate(&stop_kernel);
-    cudaEventCreate(&start_d2h);
-    cudaEventCreate(&stop_d2h);
+    CUDA_CHECK(cudaEventCreate(&start_total));
+    CUDA_CHECK(cudaEventCreate(&stop_total));
+    CUDA_CHECK(cudaEventCreate(&start_h2d));
+    CUDA_CHECK(cudaEventCreate(&stop_h2d));
+    CUDA_CHECK(cudaEventCreate(&start_kernel));
+    CUDA_CHECK(cudaEventCreate(&stop_kernel));
+    CUDA_CHECK(cudaEventCreate(&start_d2h));
+    CUDA_CHECK(cudaEventCreate(&stop_d2h));
 
-    cudaEventRecord(start_total);
-    cudaEventRecord(start_h2d);
-    cudaMemcpy(device_x, host_x, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(device_y, host_y, bytes, cudaMemcpyHostToDevice);
-    cudaEventRecord(stop_h2d);
+    CUDA_CHECK(cudaEventRecord(start_total));
+    CUDA_CHECK(cudaEventRecord(start_h2d));
+    CUDA_CHECK(cudaMemcpy(device_x, host_x, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(device_y, host_y, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaEventRecord(stop_h2d));
 
     int threads_per_block = 256;
     int num_blocks = (n + threads_per_block - 1) / threads_per_block;
-    cudaEventRecord(start_kernel);
+    CUDA_CHECK(cudaEventRecord(start_kernel));
     pointwise_product_kernel<<<num_blocks, threads_per_block>>>(device_x, device_y,
                                                                 device_prod, n);
-    cudaDeviceSynchronize();
-    cudaEventRecord(stop_kernel);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
+    CUDA_CHECK(cudaEventRecord(stop_kernel));
 
-    cudaEventRecord(start_d2h);
-    cudaMemcpy(host_prod, device_prod, bytes, cudaMemcpyDeviceToHost);
-    cudaEventRecord(stop_d2h);
-    cudaEventRecord(stop_total);
-    cudaEventSynchronize(stop_total);
+    CUDA_CHECK(cudaEventRecord(start_d2h));
+    CUDA_CHECK(cudaMemcpy(host_prod, device_prod, bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaEventRecord(stop_d2h));
+    CUDA_CHECK(cudaEventRecord(stop_total));
+    CUDA_CHECK(cudaEventSynchronize(stop_total));
 
     double gpu_dot = 0.0;
     for (int i = 0; i < n; i++) {
@@ -97,10 +108,10 @@ int main(int argc, char **argv) {
     float kernel_ms = 0.0f;
     float d2h_ms = 0.0f;
     float total_ms = 0.0f;
-    cudaEventElapsedTime(&h2d_ms, start_h2d, stop_h2d);
-    cudaEventElapsedTime(&kernel_ms, start_kernel, stop_kernel);
-    cudaEventElapsedTime(&d2h_ms, start_d2h, stop_d2h);
-    cudaEventElapsedTime(&total_ms, start_total, stop_total);
+    CUDA_CHECK(cudaEventElapsedTime(&h2d_ms, start_h2d, stop_h2d));
+    CUDA_CHECK(cudaEventElapsedTime(&kernel_ms, start_kernel, stop_kernel));
+    CUDA_CHECK(cudaEventElapsedTime(&d2h_ms, start_d2h, stop_d2h));
+    CUDA_CHECK(cudaEventElapsedTime(&total_ms, start_total, stop_total));
 
     std::printf("CUDA inner product example\n");
     std::printf("N=%d threads_per_block=%d num_blocks=%d\n", n, threads_per_block,
@@ -115,17 +126,17 @@ int main(int argc, char **argv) {
         std::printf("speedup_cpu_vs_gpu_total=%.3f\n", cpu_time_s / gpu_total_s);
     }
 
-    cudaEventDestroy(start_total);
-    cudaEventDestroy(stop_total);
-    cudaEventDestroy(start_h2d);
-    cudaEventDestroy(stop_h2d);
-    cudaEventDestroy(start_kernel);
-    cudaEventDestroy(stop_kernel);
-    cudaEventDestroy(start_d2h);
-    cudaEventDestroy(stop_d2h);
-    cudaFree(device_x);
-    cudaFree(device_y);
-    cudaFree(device_prod);
+    CUDA_CHECK(cudaEventDestroy(start_total));
+    CUDA_CHECK(cudaEventDestroy(stop_total));
+    CUDA_CHECK(cudaEventDestroy(start_h2d));
+    CUDA_CHECK(cudaEventDestroy(stop_h2d));
+    CUDA_CHECK(cudaEventDestroy(start_kernel));
+    CUDA_CHECK(cudaEventDestroy(stop_kernel));
+    CUDA_CHECK(cudaEventDestroy(start_d2h));
+    CUDA_CHECK(cudaEventDestroy(stop_d2h));
+    CUDA_CHECK(cudaFree(device_x));
+    CUDA_CHECK(cudaFree(device_y));
+    CUDA_CHECK(cudaFree(device_prod));
     std::free(host_x);
     std::free(host_y);
     std::free(host_prod);
