@@ -44,6 +44,18 @@ Important note:
 - it shows saturation behavior for this specific kernel
 - real kernels also depend on registers, shared memory, memory traffic, and occupancy limits
 
+Why increasing `repeats` often increases the measured saturation rate:
+
+- `repeats` makes each thread do more floating-point work before the kernel ends
+- kernel launch overhead stays about the same, so that fixed cost is amortized over more work
+- the benchmark becomes more compute-bound and less sensitive to setup overhead
+- longer-running blocks also give the GPU more steady work, which helps the hardware stay busy
+
+In short:
+
+- small `repeats` can understate achievable throughput because overhead matters more
+- larger `repeats` better reflect steady-state compute performance
+
 Build:
 
 ```bash

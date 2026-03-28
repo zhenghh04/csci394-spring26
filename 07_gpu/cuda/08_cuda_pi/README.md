@@ -4,6 +4,11 @@ This example estimates pi on the GPU with the midpoint-rule numerical integral
 
 - `pi = integral_0^1 4 / (1 + x^2) dx`
 
+$$
+\pi = \int_0^1 \frac{4}{1+x^2}\,dx = \frac{1}{N}\sum_n^N \frac{4}{1+n^2/N^2}
+$$
+
+
 Concepts:
 
 - 1D CUDA kernel launch
