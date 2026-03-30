@@ -1,14 +1,15 @@
-# GPU Assignment: Dense Matrix Multiplication Across CPU, OpenACC, OpenMP Target Offload, and CUDA
+# GPU Assignment: Dense Matrix Multiplication Across CPU, OpenACC, OpenMP Target Offload, CUDA, and PyTorch
 
 ## Objective
 
 Implement and compare the same dense matrix-matrix multiplication kernel in
-four versions:
+five versions:
 
 1. CPU baseline with OpenMP
 2. OpenACC offload
 3. OpenMP target offload
 4. CUDA
+5. PyTorch with GPU
 
 Then measure correctness and performance to answer a central Chapter 16-18
 question:
@@ -43,9 +44,10 @@ Minimum requirement:
 2. one OpenACC implementation
 3. one OpenMP target offload implementation
 4. one CUDA implementation
-5. one correctness check against the CPU result
-6. parseable timing output
-7. command-line input for matrix size `n`
+5. one PyTorch implementation that runs on GPU when available
+6. one correctness check against the CPU result
+7. parseable timing output
+8. command-line input for matrix size `n`
 
 Recommended command-line arguments:
 
@@ -84,7 +86,7 @@ Recommended:
 
 ## Experimental Plan
 
-Run all four versions on the same machine if possible and compare them across
+Run all five versions on the same machine if possible and compare them across
 problem sizes.
 
 Recommended sweep:
@@ -108,7 +110,7 @@ Your report should answer:
 2. Which version is fastest for large problem sizes?
 3. Does GPU compute time alone tell the whole story?
 4. At what point does transfer overhead stop dominating?
-5. How do OpenACC, OpenMP target offload, and CUDA compare on the same GEMM?
+5. How do OpenACC, OpenMP target offload, CUDA, and PyTorch compare on the same GEMM?
 
 ## Allowed Help
 
@@ -151,7 +153,8 @@ Minimum requirement:
 2. build target for OpenACC version
 3. build target for OpenMP target offload version
 4. build target for CUDA version
-5. clear comments or variables showing how to enable GPU compilation flags on
+5. build target or documented run command for the PyTorch version
+6. clear comments or variables showing how to enable GPU compilation flags on
    the target system
 
 ## Suggested Commands
@@ -187,6 +190,12 @@ make cuda
 ./app_cuda 512 5 1
 ```
 
+PyTorch:
+
+```bash
+python app_pytorch.py 512 5 1
+```
+
 ## Deliverables
 
 Submit one folder containing:
@@ -196,6 +205,7 @@ Submit one folder containing:
    - OpenACC version
    - OpenMP target offload version
    - CUDA version
+   - PyTorch version
    - Makefile
 2. Results data
    - raw logs
@@ -210,11 +220,11 @@ Submit one folder containing:
    - prompt(s) used with the AI tool, if any
    - one runtime-vs-size plot
    - one short discussion of transfer overhead
-   - one short comparison of OpenACC vs OpenMP target offload vs CUDA
+   - one short comparison of OpenACC vs OpenMP target offload vs CUDA vs PyTorch
 
 ## Grading Focus
 
-1. correctness of all four implementations
+1. correctness of all five implementations
 2. fair and reproducible timing methodology
 3. clear comparison across problem sizes
 4. accurate reasoning about host-device transfer costs
