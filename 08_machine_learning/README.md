@@ -16,6 +16,8 @@ high-performance computing practice.
 
 Contents:
 
+- `Essential_ML.md`
+  Slide deck source for the machine-learning lecture.
 - `01_intro_framework/`
   Device checks, tensors, and the basic training workflow.
 - `02_mnist_linear/`
@@ -66,3 +68,9 @@ python3 -m pip install torch torchvision
 PyTorch is the recommended framework for this module because the course already
 uses it in `07_gpu/pytorch/`, and Chapter 19 explicitly points students toward
 PyTorch distributed training as a useful comparison point.
+
+To generate a PowerPoint deck from the slide source:
+
+```bash
+pandoc Essential_ML.md -t pptx -o CH19_ML_slides.pptx
+```
