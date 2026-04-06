@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420">
   <defs>
     <style>
-      .title { font: 700 24px sans-serif; fill: #1f2937; }
-      .label { font: 600 16px sans-serif; fill: #1f2937; }
-      .small { font: 500 13px sans-serif; fill: #374151; }
+      .title { font: 700 32px sans-serif; fill: #1f2937; }
+      .label { font: 600 22px sans-serif; fill: #1f2937; }
+      .small { font: 500 18px sans-serif; fill: #374151; }
       .box { fill: #dbeafe; stroke: #2563eb; stroke-width: 2; rx: 8; }
       .sum { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; rx: 8; }
       .final { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; rx: 8; }

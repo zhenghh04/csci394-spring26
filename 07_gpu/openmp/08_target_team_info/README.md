@@ -36,6 +36,14 @@ make OFFLOAD_FLAGS='-fopenmp-targets=nvptx64-nvidia-cuda'
 make CC=nvc OFFLOAD_FLAGS='-mp=gpu'
 ```
 
+Validated A100 build and run sequence with NVIDIA HPC SDK:
+
+```bash
+make clean
+make CC=nvc OFFLOAD_FLAGS='-mp=gpu'
+OMP_TARGET_OFFLOAD=MANDATORY ./app
+```
+
 Run with default runtime decisions:
 
 ```bash

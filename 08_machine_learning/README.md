@@ -16,6 +16,8 @@ high-performance computing practice.
 
 Contents:
 
+- `00_intro_AI/`
+  What AI training is, how LLMs work, linear regression via SGD.
 - `Essential_ML.md`
   Slide deck source for the machine-learning lecture.
 - `01_intro_framework/`
@@ -37,6 +39,7 @@ Contents:
 
 Suggested teaching order:
 
+0. `00_intro_AI`
 1. `01_intro_framework`
 2. `02_mnist_linear`
 3. `04_data_loading_and_batches`
