@@ -90,8 +90,8 @@ The CNN improves **every single class**, with the largest gains on the hardest c
 
 ## Comparison
 
-![Model Comparison](report_comparison.png)
-![CIFAR-10 FC vs CNN](report_cifar10_comparison.png)
+![Model Comparison](figures/report_comparison.png)
+![CIFAR-10 FC vs CNN](figures/report_cifar10_comparison.png)
 
 ### Key Takeaways
 
