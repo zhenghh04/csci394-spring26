@@ -82,9 +82,9 @@ This demonstrates the power of convolutional architectures for image data:
 
 The CNN improves **every single class**, with the largest gains on the hardest categories (cat: +45pp, dog: +30pp, bird: +44pp).
 
-![CIFAR-10 CNN Training Curves](03_cifar10_cnn_curves.png)
-![CIFAR-10 CNN Per-Class Accuracy](03_cifar10_cnn_perclass.png)
-![CIFAR-10 CNN Confusion Matrix](03_cifar10_cnn_confusion.png)
+![CIFAR-10 CNN Training Curves](figures/03_cifar10_cnn_curves.png)
+![CIFAR-10 CNN Per-Class Accuracy](figures/03_cifar10_cnn_perclass.png)
+![CIFAR-10 CNN Confusion Matrix](figures/03_cifar10_cnn_confusion.png)
 
 ---
 
