@@ -35,8 +35,8 @@ handwritten digits are centered, grayscale, and low-resolution.
 |-------|---|---|---|---|---|---|---|---|---|---|
 | Accuracy | 99.2% | 98.5% | 97.8% | 98.5% | 98.1% | 97.4% | 98.6% | 96.7% | 97.2% | 98.0% |
 
-![MNIST Training Curves](01_mnist_fc_curves.png)
-![MNIST Confusion Matrix](01_mnist_fc_confusion.png)
+![MNIST Training Curves](figures/01_mnist_fc_curves.png)
+![MNIST Confusion Matrix](figures/01_mnist_fc_confusion.png)
 
 ---
 
@@ -56,9 +56,9 @@ Key observations:
 - **Cat** (29.7%) and **dog** (42.5%) are the hardest — they share similar shapes and textures
 - **Ship** (73.8%) and **automobile** (65.7%) are easiest — distinct shapes and backgrounds
 
-![CIFAR-10 FC Training Curves](02_cifar10_fc_curves.png)
-![CIFAR-10 FC Per-Class Accuracy](02_cifar10_fc_perclass.png)
-![CIFAR-10 FC Confusion Matrix](02_cifar10_fc_confusion.png)
+![CIFAR-10 FC Training Curves](figures/02_cifar10_fc_curves.png)
+![CIFAR-10 FC Per-Class Accuracy](figures/02_cifar10_fc_perclass.png)
+![CIFAR-10 FC Confusion Matrix](figures/02_cifar10_fc_confusion.png)
 
 ---
 
