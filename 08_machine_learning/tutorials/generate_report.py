@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(OUT_DIR, "figures"), exist_ok=True)
 
 # Load reports
 with open(os.path.join(OUT_DIR, "01_mnist_fc_report.json")) as f:
@@ -59,7 +60,7 @@ axes[2].grid(axis="y", alpha=0.3)
 
 plt.suptitle("Deep Learning Tutorial — Model Comparison", fontsize=14, fontweight="bold")
 plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "report_comparison.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "report_comparison.png"), dpi=150)
 plt.close()
 
 # ── Figure 2: CIFAR-10 FC vs CNN accuracy curves ─────────────────────
@@ -90,7 +91,7 @@ ax2.legend(fontsize=11)
 ax2.grid(axis="y", alpha=0.3)
 
 plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "report_cifar10_comparison.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "report_cifar10_comparison.png"), dpi=150)
 plt.close()
 
 # ── Markdown report ───────────────────────────────────────────────────

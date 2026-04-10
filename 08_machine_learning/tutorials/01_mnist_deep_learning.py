@@ -25,6 +25,7 @@ LEARNING_RATE = 1e-3
 SEED = 42
 DATA_DIR = "./data"
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(OUT_DIR, "figures"), exist_ok=True)
 
 torch.manual_seed(SEED)
 
@@ -154,7 +155,7 @@ ax2.legend(); ax2.grid(True, alpha=0.3)
 
 plt.suptitle("MNIST — Fully Connected Network", fontsize=13)
 plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "01_mnist_fc_curves.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "01_mnist_fc_curves.png"), dpi=150)
 plt.close()
 
 fig, ax = plt.subplots(figsize=(7, 6))
@@ -166,7 +167,7 @@ for i in range(10):
 ax.set(xlabel="Predicted", ylabel="True", title="Confusion Matrix")
 ax.set_xticks(range(10)); ax.set_yticks(range(10))
 plt.colorbar(im); plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "01_mnist_fc_confusion.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "01_mnist_fc_confusion.png"), dpi=150)
 plt.close()
 
 # ── Save JSON report ──────────────────────────────────────────────────

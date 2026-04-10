@@ -27,6 +27,7 @@ LEARNING_RATE = 1e-3
 SEED = 42
 DATA_DIR = "./data"
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(OUT_DIR, "figures"), exist_ok=True)
 CLASS_NAMES = ["airplane", "automobile", "bird", "cat", "deer",
                "dog", "frog", "horse", "ship", "truck"]
 
@@ -160,7 +161,7 @@ ax2.legend(); ax2.grid(True, alpha=0.3)
 
 plt.suptitle("CIFAR-10 — Fully Connected Network", fontsize=13)
 plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "02_cifar10_fc_curves.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "02_cifar10_fc_curves.png"), dpi=150)
 plt.close()
 
 fig, ax = plt.subplots(figsize=(9, 7))
@@ -174,7 +175,7 @@ ax.set_xticks(range(10)); ax.set_yticks(range(10))
 ax.set_xticklabels(CLASS_NAMES, rotation=45, ha="right")
 ax.set_yticklabels(CLASS_NAMES)
 plt.colorbar(im); plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "02_cifar10_fc_confusion.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "02_cifar10_fc_confusion.png"), dpi=150)
 plt.close()
 
 # Per-class bar chart
@@ -187,7 +188,7 @@ ax.set_xticklabels(CLASS_NAMES, rotation=45, ha="right")
 ax.set(ylabel="Accuracy (%)", title="Per-Class Test Accuracy")
 ax.axhline(np.mean(accs)*100, color="blue", ls="--", label=f"Mean: {np.mean(accs):.1%}")
 ax.legend(); plt.tight_layout()
-fig.savefig(os.path.join(OUT_DIR, "02_cifar10_fc_perclass.png"), dpi=150)
+fig.savefig(os.path.join(OUT_DIR, "figures", "02_cifar10_fc_perclass.png"), dpi=150)
 plt.close()
 
 # ── Save JSON report ──────────────────────────────────────────────────

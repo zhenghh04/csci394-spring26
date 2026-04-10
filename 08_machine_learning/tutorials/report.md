@@ -107,3 +107,16 @@ The CNN improves **every single class**, with the largest gains on the hardest c
    - CIFAR-10 CNN: 86.9% ✓ (CNNs capture the spatial features that matter)
 
 5. **Supporting techniques matter**: Data augmentation, batch normalization, and LR scheduling all contribute to the CNN's superior performance.
+
+---
+
+## Training Time Summary
+
+All experiments were run on Apple MPS (Metal Performance Shaders) GPU.
+
+| Experiment | Epochs | Training Time |
+| ---------- | ------ | ------------- |
+| MNIST FC | 10 | 49.9s |
+| CIFAR-10 FC | 20 | 137.5s |
+| CIFAR-10 CNN | 25 | 328.7s |
+| **Total** | **55** | **516.1s (~8.6 min)** |
