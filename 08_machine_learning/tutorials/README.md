@@ -1,6 +1,6 @@
 # Deep Learning Tutorials
 
-**CSCI 394 -- Spring 2026**
+## CSCI 394 -- Spring 2026
 
 This directory contains hands-on tutorials that progressively introduce
 deep learning using PyTorch. Each tutorial is available as a Jupyter notebook
@@ -12,6 +12,8 @@ deep learning using PyTorch. Each tutorial is available as a Jupyter notebook
 | 2 | CIFAR-10 with Fully Connected Network | `02_cifar10_deep_learning.ipynb` | `02_cifar10_deep_learning.py` |
 | 3 | CIFAR-10 with CNN | `03_cifar10_cnn.ipynb` | `03_cifar10_cnn.py` |
 | 4 | Large Language Models (LLMs) | `04_large_language_models.ipynb` | -- |
+| 5 | LLM APIs, Embeddings, and RAG | `05_llm_apis_and_embeddings.ipynb` | -- |
+| 6 | Training a Small LLM from Scratch | `06_train_small_llm.ipynb` | -- |
 
 Training results and comparison plots are in `figures/` and summarized in
 `report.md`.
@@ -151,6 +153,7 @@ in each non-overlapping patch:
 ![Max Pooling](figures/max_pooling.svg)
 
 Pooling serves two purposes:
+
 - **Reduces computation** by shrinking feature maps
 - **Adds invariance** to small spatial shifts
 

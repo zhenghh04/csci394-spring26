@@ -22,6 +22,8 @@ A **large** language model (LLM) is simply a language model with billions
 of parameters, trained on trillions of tokens of text from books, websites,
 code, and other sources.
 
+![Tokenization pipeline](figures/llm_tokenization.svg)
+
 ---
 
 ## 2. From RNNs to Transformers: A Brief History
@@ -57,25 +59,7 @@ A Transformer consists of stacked layers, each containing:
    to each token
 3. **Layer Normalization + Residual Connections** -- stabilize training
 
-```
-Input tokens
-    |
-  [Embedding + Positional Encoding]
-    |
-  +---------------------------+
-  | Multi-Head Self-Attention |
-  | + Residual + LayerNorm    |
-  +---------------------------+
-    |
-  +---------------------------+
-  | Feed-Forward Network      |
-  | + Residual + LayerNorm    |
-  +---------------------------+
-    |
-  ... (repeat N times) ...
-    |
-  [Output projection -> vocabulary logits]
-```
+![Transformer block diagram](figures/llm_transformer_block.svg)
 
 ### 3.2 Self-Attention
 
@@ -94,6 +78,8 @@ Given an input matrix **X** (sequence length x model dimension):
    Attention(Q, K, V) = softmax(Q K^T / sqrt(d_k)) V
 
 The `sqrt(d_k)` scaling prevents dot products from growing too large.
+
+![Self-attention mechanism](figures/llm_self_attention.svg)
 
 **Multi-head attention** runs `h` independent attention operations in parallel,
 each with its own Q/K/V projections, then concatenates the results.  This lets
@@ -121,6 +107,8 @@ give the model information about token positions.  Options include:
 | **Encoder-decoder** | Encoder is bidirectional, decoder is causal | Translation, summarization | T5, BART |
 
 Most modern LLMs (GPT-4, Claude, Llama) are **decoder-only**.
+
+![Causal vs bidirectional masking](figures/llm_causal_mask.svg)
 
 ---
 
@@ -161,10 +149,7 @@ After pre-training, the model is adapted for specific tasks:
   from human preference comparisons, then optimize the LLM policy via PPO or
   DPO to maximize the reward
 
-```
-Pre-training            -->  SFT              -->  RLHF
-(predict next token)         (follow instructions)   (align with preferences)
-```
+![LLM training pipeline](figures/llm_training_stages.svg)
 
 ### 4.3 Parameter-Efficient Fine-Tuning (PEFT)
 
@@ -175,6 +160,8 @@ memory.  PEFT methods reduce this dramatically:
   trainable low-rank matrices to each layer.  Typically < 1% of the total
   parameters are trainable.
 - **QLoRA**: combine LoRA with 4-bit quantization of the base model
+
+![LoRA diagram](figures/llm_lora.svg)
 
 ---
 
@@ -190,6 +177,8 @@ LLMs generate text one token at a time:
 
 This makes generation inherently **sequential** -- each new token depends on
 all previous tokens.
+
+![Autoregressive generation with KV cache](figures/llm_autoregressive.svg)
 
 ### 5.2 Decoding Strategies
 
@@ -271,6 +260,8 @@ Modern LLM training typically combines all three: FSDP or ZeRO across nodes,
 tensor parallelism within a node, and pipeline parallelism for the deepest
 models.
 
+![Parallelism strategies](figures/llm_parallelism.svg)
+
 ### 7.3 LLM Inference on Aurora
 
 Aurora has Intel Data Center GPU Max (Ponte Vecchio) accelerators.  You can
@@ -338,7 +329,19 @@ from an LLM.
 
 ---
 
-## 10. Hands-On Exercises
+## 10. Beyond Generation: Retrieval-Augmented Generation (RAG)
+
+RAG combines a vector search index with an LLM to ground answers in real documents,
+reducing hallucinations and allowing the model's knowledge to be updated without
+retraining.
+
+![RAG pipeline](figures/llm_rag.svg)
+
+See `05_llm_apis_and_embeddings.ipynb` for a hands-on RAG implementation.
+
+---
+
+## 11. Hands-On Exercises
 
 ### Exercise 1: Tokenization
 
