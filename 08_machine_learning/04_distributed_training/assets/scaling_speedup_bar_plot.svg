@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <style>
+      .title { font: 700 30px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 600 18px Arial, sans-serif; fill: #334155; }
+      .axis { stroke: #334155; stroke-width: 2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 5 5; }
+      .tick { font: 500 15px Arial, sans-serif; fill: #334155; }
+      .label { font: 600 16px Arial, sans-serif; fill: #0f172a; }
+      .value { font: 600 14px Arial, sans-serif; fill: #0f172a; }
+      .mnist { fill: #2563eb; }
+      .cifar { fill: #dc2626; }
+      .ideal { stroke: #64748b; stroke-width: 3; fill: none; stroke-dasharray: 10 8; }
+      .legend { font: 600 16px Arial, sans-serif; fill: #1e293b; }
+      .note { font: 500 14px Arial, sans-serif; fill: #475569; }
+    </style>
+  </defs>
+
+  <text x="45" y="48" class="title">DDP Scaling Speedup from Measured Throughput</text>
+  <text x="45" y="78" class="subtitle">Speedup is normalized to each model's 1-GPU throughput</text>
+
+  <line x1="120" y1="580" x2="1090" y2="580" class="axis"/>
+  <line x1="120" y1="140" x2="120" y2="580" class="axis"/>
+
+  <line x1="120" y1="500" x2="1090" y2="500" class="grid"/>
+  <line x1="120" y1="420" x2="1090" y2="420" class="grid"/>
+  <line x1="120" y1="340" x2="1090" y2="340" class="grid"/>
+  <line x1="120" y1="260" x2="1090" y2="260" class="grid"/>
+  <line x1="120" y1="180" x2="1090" y2="180" class="grid"/>
+
+  <text x="88" y="585" class="tick">0</text>
+  <text x="88" y="505" class="tick">1</text>
+  <text x="88" y="425" class="tick">2</text>
+  <text x="88" y="345" class="tick">3</text>
+  <text x="88" y="265" class="tick">4</text>
+  <text x="88" y="185" class="tick">5</text>
+
+  <text x="540" y="640" class="label">Number of GPUs</text>
+  <text x="42" y="370" transform="rotate(-90 42 370)" class="label">Speedup Relative to 1 GPU</text>
+
+  <polyline points="220,500 430,420 640,260 850,100" class="ideal"/>
+  <circle cx="220" cy="500" r="5" fill="#64748b"/>
+  <circle cx="430" cy="420" r="5" fill="#64748b"/>
+  <circle cx="640" cy="260" r="5" fill="#64748b"/>
+  <circle cx="850" cy="100" r="5" fill="#64748b"/>
+
+  <rect x="175" y="500" width="38" height="80" class="mnist"/>
+  <rect x="227" y="500" width="38" height="80" class="cifar"/>
+  <text x="178" y="492" class="value">1.00</text>
+  <text x="230" y="492" class="value">1.00</text>
+  <text x="205" y="615" class="tick">1</text>
+
+  <rect x="385" y="456" width="38" height="124" class="mnist"/>
+  <rect x="437" y="429" width="38" height="151" class="cifar"/>
+  <text x="382" y="448" class="value">1.55</text>
+  <text x="434" y="421" class="value">1.88</text>
+  <text x="415" y="615" class="tick">2</text>
+
+  <rect x="595" y="395" width="38" height="185" class="mnist"/>
+  <rect x="647" y="309" width="38" height="271" class="cifar"/>
+  <text x="592" y="387" class="value">2.31</text>
+  <text x="644" y="301" class="value">3.39</text>
+  <text x="625" y="615" class="tick">4</text>
+
+  <rect x="805" y="364" width="38" height="216" class="mnist"/>
+  <rect x="857" y="171" width="38" height="409" class="cifar"/>
+  <text x="802" y="356" class="value">2.70</text>
+  <text x="854" y="163" class="value">5.11</text>
+  <text x="835" y="615" class="tick">8</text>
+
+  <rect x="760" y="58" width="24" height="24" class="mnist"/>
+  <text x="794" y="76" class="legend">MNIST</text>
+  <rect x="900" y="58" width="24" height="24" class="cifar"/>
+  <text x="934" y="76" class="legend">CIFAR-10</text>
+  <line x1="1035" y1="70" x2="1090" y2="70" class="ideal"/>
+  <text x="1035" y="96" class="legend">Ideal</text>
+
+  <rect x="120" y="665" width="970" height="60" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" rx="12"/>
+  <text x="145" y="692" class="note">MNIST speedups: 1.00, 1.55, 2.31, 2.70</text>
+  <text x="470" y="692" class="note">CIFAR-10 speedups: 1.00, 1.88, 3.39, 5.11</text>
+  <text x="145" y="716" class="note">CIFAR-10 scales better computationally, but the final accuracy also drops as global batch size and scaled learning rate increase.</text>
+</svg>

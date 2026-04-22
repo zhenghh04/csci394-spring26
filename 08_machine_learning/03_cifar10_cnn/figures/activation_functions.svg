@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 260" font-family="'Segoe UI', Arial, sans-serif" font-size="14">
+  <!-- ReLU -->
+  <text x="150" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#2563eb">ReLU: f(z) = max(0, z)</text>
+
+  <!-- ReLU axes -->
+  <line x1="40" y1="200" x2="280" y2="200" stroke="#999" stroke-width="1"/>
+  <line x1="150" y1="40" x2="150" y2="220" stroke="#999" stroke-width="1"/>
+  <text x="275" y="218" font-size="12" fill="#666">z</text>
+  <text x="125" y="50" font-size="12" fill="#666">f(z)</text>
+  <text x="155" y="215" font-size="11" fill="#666">0</text>
+
+  <!-- ReLU function -->
+  <line x1="40" y1="200" x2="150" y2="200" stroke="#2563eb" stroke-width="2.5"/>
+  <line x1="150" y1="200" x2="270" y2="80" stroke="#2563eb" stroke-width="2.5"/>
+
+  <!-- Sigmoid -->
+  <text x="470" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#059669">Sigmoid: f(z) = 1/(1+e&#x207B;&#x1DBB;)</text>
+
+  <!-- Sigmoid axes -->
+  <line x1="340" y1="200" x2="600" y2="200" stroke="#999" stroke-width="1"/>
+  <line x1="470" y1="40" x2="470" y2="220" stroke="#999" stroke-width="1"/>
+  <text x="595" y="218" font-size="12" fill="#666">z</text>
+  <text x="445" y="50" font-size="12" fill="#666">f(z)</text>
+  <text x="475" y="215" font-size="11" fill="#666">0</text>
+
+  <!-- Sigmoid 1.0 and 0.5 lines -->
+  <line x1="345" y1="70" x2="595" y2="70" stroke="#ccc" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <text x="335" y="75" font-size="11" fill="#888">1</text>
+  <line x1="345" y1="135" x2="595" y2="135" stroke="#ccc" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <text x="330" y="140" font-size="11" fill="#888">0.5</text>
+
+  <!-- Sigmoid curve (approximated with path) -->
+  <path d="M 350,195 C 380,194 420,190 440,175 C 455,160 462,148 470,135 C 478,122 485,110 500,95 C 520,80 560,72 590,71" fill="none" stroke="#059669" stroke-width="2.5"/>
+
+  <!-- Labels -->
+  <text x="150" y="250" text-anchor="middle" font-size="12" fill="#555">Simple, fast, avoids</text>
+  <text x="150" y="265" text-anchor="middle" font-size="12" fill="#555">vanishing gradients</text>
+  <text x="470" y="250" text-anchor="middle" font-size="12" fill="#555">Outputs between 0 and 1</text>
+  <text x="470" y="265" text-anchor="middle" font-size="12" fill="#555">(probability interpretation)</text>
+</svg>

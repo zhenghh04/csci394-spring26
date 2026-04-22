@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" font-family="'Segoe UI', Arial, sans-serif" font-size="14">
+  <text x="320" y="22" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">Data Augmentation</text>
+
+  <!-- Original -->
+  <g transform="translate(30,40)">
+    <rect x="0" y="0" width="100" height="80" rx="6" fill="#e0e7ff" stroke="#2563eb" stroke-width="1.5"/>
+    <text x="50" y="35" text-anchor="middle" font-size="11" fill="#1e40af">cat</text>
+    <text x="50" y="55" text-anchor="middle" font-size="16" fill="#1e40af">&gt;^.^&lt;</text>
+    <text x="50" y="100" text-anchor="middle" font-size="11" fill="#555">Original</text>
+  </g>
+
+  <text x="155" y="85" font-size="20" fill="#555">&#x2192;</text>
+
+  <!-- RandomCrop -->
+  <g transform="translate(180,40)">
+    <rect x="0" y="0" width="100" height="80" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+    <text x="50" y="35" text-anchor="middle" font-size="11" fill="#92400e">cat</text>
+    <text x="58" y="55" text-anchor="middle" font-size="16" fill="#92400e">&gt;^.^</text>
+    <text x="50" y="100" text-anchor="middle" font-size="11" fill="#555">RandomCrop</text>
+  </g>
+
+  <!-- HorizontalFlip -->
+  <g transform="translate(320,40)">
+    <rect x="0" y="0" width="100" height="80" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <text x="50" y="35" text-anchor="middle" font-size="11" fill="#065f46">tac</text>
+    <text x="50" y="55" text-anchor="middle" font-size="16" fill="#065f46">&gt;^.^&lt;</text>
+    <text x="50" y="100" text-anchor="middle" font-size="11" fill="#555">HorizontalFlip</text>
+  </g>
+
+  <!-- Both -->
+  <g transform="translate(460,40)">
+    <rect x="0" y="0" width="100" height="80" rx="6" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+    <text x="50" y="35" text-anchor="middle" font-size="11" fill="#9d174d">tac</text>
+    <text x="42" y="55" text-anchor="middle" font-size="16" fill="#9d174d">^.^&lt;</text>
+    <text x="50" y="100" text-anchor="middle" font-size="11" fill="#555">Both</text>
+  </g>
+
+  <text x="320" y="165" text-anchor="middle" font-size="12" fill="#888" font-style="italic">All four are valid training examples of "cat"! Applied only during training.</text>
+</svg>

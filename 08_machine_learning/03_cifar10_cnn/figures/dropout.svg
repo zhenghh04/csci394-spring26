@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 230" font-family="'Segoe UI', Arial, sans-serif" font-size="14">
+  <text x="310" y="22" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">Dropout Regularization</text>
+
+  <!-- Without Dropout -->
+  <text x="150" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563eb">Without Dropout</text>
+  <text x="150" y="68" text-anchor="middle" font-size="11" fill="#888">All neurons active</text>
+
+  <g transform="translate(40,80)">
+    <!-- Layer 1 -->
+    <circle cx="30" cy="0" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="90" cy="0" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="150" cy="0" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="210" cy="0" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <!-- Layer 2 -->
+    <circle cx="30" cy="55" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="90" cy="55" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="150" cy="55" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="210" cy="55" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <!-- Layer 3 -->
+    <circle cx="30" cy="110" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="90" cy="110" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="150" cy="110" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <circle cx="210" cy="110" r="12" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+    <!-- Connections -->
+    <g stroke="#93c5fd" stroke-width="0.8" opacity="0.6">
+      <line x1="30" y1="12" x2="30" y2="43"/>
+      <line x1="30" y1="12" x2="90" y2="43"/>
+      <line x1="90" y1="12" x2="90" y2="43"/>
+      <line x1="90" y1="12" x2="150" y2="43"/>
+      <line x1="150" y1="12" x2="150" y2="43"/>
+      <line x1="150" y1="12" x2="210" y2="43"/>
+      <line x1="210" y1="12" x2="210" y2="43"/>
+      <line x1="30" y1="67" x2="30" y2="98"/>
+      <line x1="30" y1="67" x2="90" y2="98"/>
+      <line x1="90" y1="67" x2="90" y2="98"/>
+      <line x1="90" y1="67" x2="150" y2="98"/>
+      <line x1="150" y1="67" x2="150" y2="98"/>
+      <line x1="150" y1="67" x2="210" y2="98"/>
+      <line x1="210" y1="67" x2="210" y2="98"/>
+    </g>
+  </g>
+
+  <!-- Divider -->
+  <line x1="310" y1="45" x2="310" y2="220" stroke="#ccc" stroke-width="1" stroke-dasharray="6,4"/>
+
+  <!-- With Dropout -->
+  <text x="470" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#059669">With Dropout (p=0.5)</text>
+  <text x="470" y="68" text-anchor="middle" font-size="11" fill="#888">Random 50% disabled</text>
+
+  <g transform="translate(360,80)">
+    <!-- Layer 1 -->
+    <circle cx="30" cy="0" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="90" cy="0" r="12" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="90" y="5" text-anchor="middle" font-size="14" fill="#dc2626">&#xD7;</text>
+    <circle cx="150" cy="0" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="210" cy="0" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+
+    <!-- Layer 2 -->
+    <circle cx="30" cy="55" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="90" cy="55" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="150" cy="55" r="12" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="150" y="60" text-anchor="middle" font-size="14" fill="#dc2626">&#xD7;</text>
+    <circle cx="210" cy="55" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+
+    <!-- Layer 3 -->
+    <circle cx="30" cy="110" r="12" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="30" y="115" text-anchor="middle" font-size="14" fill="#dc2626">&#xD7;</text>
+    <circle cx="90" cy="110" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="150" cy="110" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="210" cy="110" r="12" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+
+    <!-- Active connections only -->
+    <g stroke="#6ee7b7" stroke-width="0.8" opacity="0.6">
+      <line x1="30" y1="12" x2="30" y2="43"/>
+      <line x1="30" y1="12" x2="90" y2="43"/>
+      <line x1="150" y1="12" x2="90" y2="43"/>
+      <line x1="210" y1="12" x2="210" y2="43"/>
+      <line x1="30" y1="67" x2="90" y2="98"/>
+      <line x1="90" y1="67" x2="90" y2="98"/>
+      <line x1="90" y1="67" x2="150" y2="98"/>
+      <line x1="210" y1="67" x2="150" y2="98"/>
+      <line x1="210" y1="67" x2="210" y2="98"/>
+    </g>
+  </g>
+
+  <text x="310" y="218" text-anchor="middle" font-size="12" fill="#888" font-style="italic">Disabled neurons change each batch, forcing redundant representations.</text>
+</svg>
