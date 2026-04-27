@@ -54,9 +54,7 @@ def setup_distributed():
     backend = "nccl" if torch.cuda.is_available() else "gloo"
 
 
-
     local_rank = int(os.environ.get("LOCAL_RANK", 0))
-
     if torch.cuda.is_available():
         device = torch.device(f"cuda:{local_rank}")
         torch.cuda.set_device(device)

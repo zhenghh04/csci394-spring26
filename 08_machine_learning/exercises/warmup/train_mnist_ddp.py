@@ -84,7 +84,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--batch-size', type=int, default=64)
-    parser.add_argument('--lr', type=float, default=0.001)
+    parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--warmup-epochs', type=int, default=0)  #DDP: warmup epochs (0=no warmup)
     parser.add_argument('--results-dir', type=str, default='results')
     args = parser.parse_args()
@@ -92,11 +92,12 @@ def main():
     # ---- DDP: Initialize distributed process group ----
     # Creates a communication group so all GPUs can synchronize gradients.
     # The "nccl" backend is optimized for NVIDIA GPU-to-GPU communication.
-    dist.init_process_group(backend="nccl")                    #DDP
-    rank = dist.get_rank()                                     #DDP: global process ID
-    world_size = dist.get_world_size()                         #DDP: total number of GPUs
     local_rank = int(os.environ.get("LOCAL_RANK", 0))          #DDP: GPU index on this node
     device = torch.device(f"cuda:{local_rank}")                #DDP: each rank uses its own GPU
+    
+    dist.init_process_group(backend="nccl", device_id = device)                    #DDP
+    rank = dist.get_rank()                                     #DDP: global process ID
+    world_size = dist.get_world_size()                         #DDP: total number of GPUs
     torch.cuda.set_device(device)                              #DDP
 
     if rank == 0:
