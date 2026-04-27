@@ -13,6 +13,7 @@ This folder contains Jupyter notebooks, helper scripts, and external resources f
 | **LLM Basics** | [`../05_llm_basics/04_llm.ipynb`](../05_llm_basics/04_llm.ipynb) | Notebook | Introduction to large language models and transformers |
 | **LLM APIs, Embeddings & RAG** | [`./05_llm_apis_and_embeddings.ipynb`](./05_llm_apis_and_embeddings.ipynb) | Notebook | Working with LLM APIs, embeddings, and retrieval-augmented generation |
 | **Training a Small LLM** | [`../06_llm_training/06_train_small_llm.ipynb`](../06_llm_training/06_train_small_llm.ipynb) | Notebook | Training a small language model from scratch |
+| **Agentic AI Step-by-Step** | [`../08_agentic_ai/TUTORIALS.md`](../08_agentic_ai/TUTORIALS.md) | Scripts + Notes | Agent loops, RAG, MCP-style tools, and skills |
 
 ## Advanced Topics
 
@@ -84,6 +85,15 @@ torchrun --nproc_per_node=2 ../04_distributed_training/train_cifar10_ddp.py --ep
 
 # Generate comparison report
 python generate_report.py
+```
+
+For the agentic AI tutorials:
+
+```bash
+cd ../08_agentic_ai
+python3 toy_agent_demo.py --demo explain
+python3 mcp_rag_skills_demo.py --demo rag
+python3 mcp_stdio_client.py
 ```
 
 ## Learning Path Recommendations

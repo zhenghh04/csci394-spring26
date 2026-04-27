@@ -44,6 +44,8 @@ Contents:
   Measure timing and accuracy across batch sizes and devices.
 - `assignments/02_distributed_ml/`
   Strong-scaling or efficiency study for distributed training.
+- `assignments/03_cifar10_lr_warmup_tensor_parallel/`
+  CIFAR-10 learning-rate and warmup study plus tensor-parallel matrix multiplication.
 
 Suggested teaching order:
 

@@ -97,6 +97,28 @@ The important idea for teaching is not the exact wire format. The important
 idea is that MCP gives a model or agent a standardized way to interact with
 external capabilities.
 
+At a high level, MCP separates two roles:
+
+- **client**
+  the model application or agent runtime that wants context and tools
+- **server**
+  a process or service that exposes capabilities to the client
+
+The common capabilities are:
+
+- **tools**
+  callable actions such as search, file lookup, database queries, or
+  calculations
+- **resources**
+  context objects the client can read, such as documents or files
+- **prompts**
+  reusable prompt templates or workflows
+
+The official MCP protocol uses JSON-RPC messages. Standard transports include
+stdio and Streamable HTTP. In the stdio version, the client launches the server
+as a subprocess and exchanges newline-delimited JSON messages over standard
+input and standard output.
+
 Examples of capabilities exposed through an MCP-style interface:
 
 - file readers
@@ -145,6 +167,22 @@ From an HPC or systems perspective, MCP raises questions like:
 
 So even though the acronym sounds application-level, the engineering issues are
 very much systems issues.
+
+### 3.4 Course Demos
+
+This directory uses two levels of MCP teaching examples:
+
+1. `mcp_rag_skills_demo.py`
+   A conceptual demo. It shows a registry of tools and how an agent might
+   choose between retrieval, tool discovery, and a reusable skill.
+2. `mcp_stdio_server.py` and `mcp_stdio_client.py`
+   A protocol-shaped demo. It shows JSON-RPC requests over stdin/stdout with
+   `tools/list` and `tools/call`.
+
+The second demo is still intentionally small. It does not implement the full
+MCP lifecycle, authentication, capability negotiation, or all content types.
+Its purpose is to make the client/server boundary visible in a few lines of
+standard-library Python.
 
 ---
 
@@ -288,7 +326,9 @@ concepts separate.
 2. Introduce MCP as the interface layer for tools and context providers.
 3. Introduce skills as reusable workflows that sit above tools.
 4. Show how one agent request may use all three.
-5. Emphasize that none of these replaces the underlying model.
+5. Run the stdio demo so students see tool discovery and tool calls as
+   protocol messages.
+6. Emphasize that none of these replaces the underlying model.
 
 ---
 
@@ -323,3 +363,9 @@ RAG, MCP, and agent skills are complementary.
 
 When students keep those layers separate, agent architectures become much
 easier to understand.
+
+References:
+
+- Model Context Protocol specification: https://modelcontextprotocol.io/specification
+- MCP transports: https://modelcontextprotocol.io/specification/2025-03-26/basic/transports
+- MCP Python SDK: https://github.com/modelcontextprotocol/python-sdk

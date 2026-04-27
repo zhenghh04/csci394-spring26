@@ -4,24 +4,18 @@
 
 ---
 
+## Motivation: One Training Step Is an HPC Job
+
+![LLM training systems loop](figures/hpc_training_loop.svg){width=88%}
+
+---
+
 ## 1. Motivation: Why Distributed Training?
 
-### The Problem
+![Memory wall for 7B training](figures/memory_wall_7b.svg){width=88%}
 
-Training a **7B-parameter model** with Adam in mixed precision requires:
-
-```
-Parameters (fp16):     7B × 2 bytes  =  14 GB
-Gradients (fp16):      7B × 2 bytes  =  14 GB
-Optimizer state (fp32): 7B × 8 bytes  =  56 GB
-Activations:           ~10 GB
-────────────────────────────────────
-TOTAL:                ~94 GB
-```
-
-An A100 GPU has **80 GB** of memory.
-
-**This model does not fit on a single GPU.**
+**The first lesson:** distributed training is not only about speed. It is often
+the only way to make the model fit at all.
 
 ---
 
@@ -32,10 +26,10 @@ An A100 GPU has **80 GB** of memory.
 | Model weights (fp16) | 14 GB | 14 GB |
 | Activations | tiny | ~10 GB |
 | Gradients | — | 14 GB |
-| Optimizer state | — | 56 GB |
-| **Total** | **14 GB** | **94 GB** |
+| Adam moments + master weights | — | 84 GB |
+| **Total** | **14 GB** | **122 GB** |
 
-**Training costs 7x more memory than inference.**
+Model state alone costs **8x inference memory** before activations.
 
 This is why you can run inference on a model that you cannot train.
 
@@ -43,42 +37,29 @@ This is why you can run inference on a model that you cannot train.
 
 ## 3. Scale of the Problem
 
-| Model | Parameters | Training memory | A100s needed |
-| ----- | ---------- | --------------- | ------------ |
-| GPT-2 | 1.5B | 28 GB | 1 |
-| LLaMA-7B | 7B | 112 GB | 2 |
-| LLaMA-13B | 13B | 226 GB | 3 |
-| LLaMA-65B | 65B | 1 TB | 13 |
-| GPT-3 | 175B | 2.8 TB | 35 |
+| Model | Parameters | Training memory | A100-80GBs needed |
+| ----- | ---------- | --------------- | ------------------ |
+| GPT-2 XL | 1.5B | ~28 GB | 1 |
+| LLaMA-7B | 7B | ~122 GB | 2 |
+| LLaMA-13B | 13B | ~226 GB | 3 |
+| LLaMA-65B | 65B | ~1.1 TB | 14 |
+| GPT-3 | 175B | ~3 TB | 38 |
 
-Doubling the model size requires more than double the memory.
+These are lower bounds: temporary buffers, fragmentation, and longer sequences
+increase the real requirement.
 
 ---
 
-## 4. The Growth of LLM Model Sizes in History
+## 4. The Growth of LLM Model Sizes
 
-### Exponential Growth of Parameters Over Time
-
-| Year | Model | Parameters | Training data | Key innovation |
-| ---- | ----- | ---------- | -------------- | -------------- |
-| 2018 | GPT-1 | 117M | 40 GB | Decoder-only, pre-train then fine-tune |
-| 2019 | GPT-2 | 1.5B | 40 GB | Scaling up language modeling |
-| 2020 | GPT-3 | 175B | 300B tokens | In-context learning, few-shot prompting |
-| 2021 | T5-11B | 11B | 750GB | Encoder-decoder, GLUE benchmark |
-| 2021 | Jurassic-1 | 178B | 300B tokens | Competitive with GPT-3 |
-| 2022 | LLaMA-1 | 65B | 1.4T tokens | Efficient training, open-weight |
-| 2023 | LLaMA-2 | 70B | 2T tokens | Improved instructions, aligned |
-| 2023 | Mixtral-8x7B | 56B | 2T tokens | Mixture of Experts (MoE) |
-| 2024 | LLaMA-3 | 70B | 15T tokens | Better scaling, longer context |
-| 2024 | GPT-4 | 1.8T+ | proprietary | Multimodal, reasoning |
-| 2025 | DeepSeek-R1 | 671B | multi-trillion | Extended thinking, reasoning |
+![LLM model size timeline](figures/llm_scaling_timeline.svg){width=88%}
 
 ### Key Trends
 
-1. **Parameter growth**: 117M → 1.8T+ in 7 years (**~15,000x**)
-2. **Training data**: 40 GB → 15+ trillion tokens (**~375,000x**)
-3. **Compute cost**: Exponential — single models now cost **$5M--$100M+** to train
-4. **Efficiency shift**: Recent models (LLaMA, Mixtral) are more parameter-efficient than early giants
+1. **Parameter growth**: millions to hundreds of billions in a few years
+2. **Training data growth**: billions to trillions of tokens
+3. **Compute cost**: single training runs can cost millions of GPU-hours
+4. **Efficiency shift**: newer models often spend more tokens per parameter
 
 ---
 
@@ -107,9 +88,9 @@ Total FLOPs ≈ 6 × N × D
 ```
 
 The factor of 6 comes from:
-- 1× for forward pass
-- 2× for backward pass (weight gradients + activation gradients)
-- 2× more for multiply-accumulate structure
+- about `2 × N` FLOPs per token for the forward pass
+- backward is about 2x the forward pass
+- training is forward + backward: `3 × 2 × N × D`
 
 ### Chinchilla Scaling Law
 
@@ -126,19 +107,13 @@ D_opt ≈ 20 × N
 
 ## 7. GPU Utilization: The Roofline Model
 
+![Roofline model for LLM training MFU](figures/roofline_mfu.svg){width=88%}
+
 Not all GPUs run at peak speed. The key metric is **Model FLOPs Utilization (MFU)**:
 
 ```
 MFU = (actual FLOPs/s) / (theoretical peak FLOPs/s)
 ```
-
-### Real MFU in Practice
-
-| Setup | MFU |
-| ----- | --- |
-| Naive PyTorch, single GPU | 10--25% |
-| Flash Attention + mixed precision | 35--45% |
-| Production (Megatron-LM) | 45--60% |
 
 **The gap is communication and memory bandwidth, not compute.**
 
@@ -146,22 +121,11 @@ MFU = (actual FLOPs/s) / (theoretical peak FLOPs/s)
 
 ## 8. Why Data Parallelism Alone is Not Enough
 
-### Data Parallelism (DDP)
-
-Every GPU holds a **full copy** of the model. Only the data is split.
-
-```
-GPU 0:  [full model] ──→ process batch [0..63]
-GPU 1:  [full model] ──→ process batch [64..127]
-GPU 2:  [full model] ──→ process batch [128..191]
-GPU 3:  [full model] ──→ process batch [192..255]
-
-After backward:  all-reduce gradients
-```
+![Data parallelism throughput and capacity limit](figures/data_parallel_limit.svg){width=88%}
 
 ### The Problem
 
-- If the model requires 112 GB and each GPU has 80 GB, **DDP cannot start.**
+- If the model requires 122 GB and each GPU has 80 GB, **DDP cannot start.**
 - Adding more GPUs does **not help** with the memory problem.
 - Each GPU still needs the full model.
 
@@ -173,33 +137,19 @@ After backward:  all-reduce gradients
 
 To solve the **memory problem**, we need to split the model itself.
 
-| Strategy | What's split | Main benefit | Main cost |
-| -------- | ------------ | ------------ | --------- |
-| Data Parallelism | Training data | Throughput | Gradient communication |
-| Tensor Parallelism | Tensors inside a layer | Fits models on 1 node | High intra-layer communication |
-| Pipeline Parallelism | Model layers | Fits models across nodes | Pipeline bubbles, scheduling |
-| ZeRO / FSDP | Model state (params, grads, optimizer) | Memory efficiency | Frequent gather/scatter |
+![Four parallelism strategies](figures/parallelism_map.svg){width=88%}
+
+The art is choosing which dimension to split without making communication the
+new bottleneck.
 
 ---
 
 ## 10. Tensor Parallelism (TP): Column Parallel
 
-### The Idea
+![Tensor parallel linear layer schematic](figures/tensor_parallel_schematic.svg){width=82%}
 
-Split a weight matrix by **output features (columns)**.
-
-```
-Full weight W: shape [out_features, in_features]
-
-GPU 0: W₀ = W[0        : out/2, :]    Y₀ = X @ W₀ᵀ
-GPU 1: W₁ = W[out/2    : out,   :]    Y₁ = X @ W₁ᵀ
-
-Combine: all-gather(Y₀, Y₁) → full output Y = [Y₀ | Y₁]
-```
-
-### Communication
-
-**All-gather**: Each GPU sends its local output to all others.
+- **Column parallel**: split output features, then all-gather the output.
+- **Row parallel**: split input features, then all-reduce partial sums.
 
 ---
 
@@ -211,12 +161,12 @@ Split a weight matrix by **input features (rows)**.
 
 ```
 Full input X: shape [batch, in]
-Full weight W: shape [out, in]
+Full weight W: shape [in, out]
 
-GPU 0: X₀ = X[:, 0    : in/2],  W₀ = W[:, 0    : in/2]  →  partial sum S₀
-GPU 1: X₁ = X[:, in/2 : in  ],  W₁ = W[:, in/2 : in  ]  →  partial sum S₁
+GPU 0: X0 = X[:, 0    : in/2],  W0 = W[0    : in/2, :]  ->  partial S0
+GPU 1: X1 = X[:, in/2 : in  ],  W1 = W[in/2 : in,   :]  ->  partial S1
 
-Combine: all-reduce(S₀ + S₁) → full output Y = S₀ + S₁
+Combine: all-reduce(S0 + S1) -> full output Y = S0 + S1
 ```
 
 ### Communication
@@ -247,8 +197,8 @@ Output
 
 Tensor parallelism requires communication on **every forward and backward pass**.
 
-- Within a node (NVLink): 600 GB/s bidirectional ✓
-- Across nodes (InfiniBand): 400 GB/s ✗ (communication dominates)
+- Within a node (NVLink): very high bandwidth and low latency
+- Across nodes (InfiniBand): useful, but latency makes per-layer collectives expensive
 
 **Tensor parallelism is kept intra-node. Inter-node requires other strategies.**
 
@@ -273,18 +223,9 @@ Data flows through stages like an **assembly line**.
 
 ## 14. Pipeline Parallelism: Micro-batches
 
-### Forward and Backward Waves
-
 To keep all stages busy, split the global batch into **micro-batches**.
 
-```
-Time  →
-
-Stage 0:  [mb1-F]  [mb2-F]  [mb3-F]  [mb4-F]  .  .  [mb4-B]  [mb3-B]
-Stage 1:   .      [mb1-F]  [mb2-F]  [mb3-F]  [mb4-F] [mb4-B]  [mb3-B]
-Stage 2:   .       .      [mb1-F]  [mb2-F]  [mb3-F] [mb4-B]
-Stage 3:   .       .       .      [mb1-F]  [mb2-F] [mb1-B]
-```
+![Pipeline parallel schedule and bubble](figures/pipeline_schedule_bubble.svg){width=88%}
 
 **Pipeline bubble**: stages are idle during startup and drain.
 
@@ -337,9 +278,9 @@ This reduces the bubble significantly with the same memory.
 ### The Problem with DDP
 
 Every GPU holds:
-- Full parameters (16 bytes/param)
+- Full parameters (2 bytes/param)
 - Full gradients (2 bytes/param)
-- **Full optimizer state (8 bytes/param)** ← redundant!
+- **Full Adam state + master weights (12 bytes/param)** -- redundant!
 
 With 8 GPUs, optimizer state is replicated 8× unnecessarily.
 
@@ -376,27 +317,13 @@ Memory saving: eliminate ~87% of per-GPU redundancy
 
 ## 19. ZeRO Stage 3: Shard Parameters Too
 
-### The Ultimate Savings
+![ZeRO stages memory savings](figures/zero_stages_memory.svg){width=82%}
 
-Shard all parameters, all gradients, all optimizer states.
+Stage 3 shards **parameters, gradients, and optimizer state**. During forward
+and backward, each layer gathers what it needs and discards it afterward.
 
-**Before each forward pass**: all-gather layer parameters as they are needed  
-**After forward/backward**: discard non-owner shards
-
-```
-Memory per GPU = (Total model state) / (world_size)
-```
-
-### Example: GPT-3 (175B) on 64 GPUs
-
-| Strategy | Memory per GPU |
-| -------- | -------------- |
-| DDP | 2.8 TB ✗ |
-| ZeRO Stage 1 | ~0.8 TB |
-| ZeRO Stage 2 | ~0.35 TB |
-| ZeRO Stage 3 | **44 GB ✓** |
-
-**ZeRO Stage 3 makes GPT-3-scale training possible.**
+For GPT-3 model state on 64 GPUs, Stage 3 reduces per-GPU state from
+**2.8 TB** to about **44 GB** before activations.
 
 ---
 
@@ -435,15 +362,7 @@ model = FSDP(model, auto_wrap_policy=size_based_auto_wrap_policy)
 
 ## 22. 3D Parallelism: Composing All Strategies
 
-### Real Production Systems Combine All Four
-
-```
-World = (D × T × P) GPUs
-
-D  data-parallel groups     (different token batches)
-T  tensor-parallel groups   (within a node via NVLink)
-P  pipeline stages          (across nodes)
-```
+![3D parallelism cube](figures/parallelism_cube_3d.svg){width=88%}
 
 ### Example: 530B-parameter Model on 2048 GPUs
 
@@ -452,7 +371,7 @@ Pipeline stages:  P = 8   (each holds ~66B params)
 Tensor parallel:  T = 8   (within one 8-GPU node)
 Data parallel:    D = 32  (32 independent model replicas)
 
-Total: 8 × 8 × 32 = 2048 GPUs
+Total: 8 x 8 x 32 = 2048 GPUs
 ```
 
 Each pipeline stage is a tensor-parallel group, and there are 32 such groups in data parallelism.
@@ -487,7 +406,7 @@ Does the model fit on one GPU?
 
 ### Why Distributed Training?
 
-- Training memory is **8x inference memory**
+- Training model state is **~8x inference weights**
 - Large models simply do not fit on one GPU
 - Data parallelism alone helps throughput, not capacity
 
@@ -508,13 +427,27 @@ Real LLM training uses **all four simultaneously** to balance:
 
 ---
 
+## Why This Should Matter to You
+
+This lecture is not only about foundation-model companies.
+
+- The same ideas appear in scientific ML, climate models, protein models,
+  recommender systems, and multimodal models.
+- A 10% utilization improvement on 1,000 GPUs is a large engineering win.
+- Students who understand **memory + compute + communication** can reason about
+  systems that most users only treat as black boxes.
+
+**The skill is not "use more GPUs." The skill is knowing what to split.**
+
+---
+
 ## 25. The Numbers You Should Remember
 
 | Metric | Value |
 | ------ | ----- |
 | Training memory per parameter (Adam, fp16) | 16 bytes |
-| Training / inference memory ratio | ~8x |
-| LLaMA-7B total training memory | 112 GB |
+| Training / inference model-state ratio | ~8x |
+| LLaMA-7B model state + activations | ~122 GB |
 | A100 GPU memory | 80 GB |
 | GPUs needed for 7B training (minimum) | 2 |
 | Model FLOPs Utilization (production) | 40--60% |
@@ -594,6 +527,7 @@ torchrun --standalone --nproc_per_node=2 \
 
 - `train_tiny_llm_ddp.py` -- Runnable DDP demo
 - `tensor_parallel_linear_demo.py` -- Tensor parallelism visualization
+- `build_figures.py` -- Regenerates the schematic SVG figures
 - PyTorch FSDP -- `torch.distributed.fsdp`
 - Megatron-LM -- `nvidia/Megatron-LM` on GitHub
 

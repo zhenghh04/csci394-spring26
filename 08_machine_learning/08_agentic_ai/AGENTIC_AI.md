@@ -224,6 +224,8 @@ What to point out during the demo:
 For a more focused discussion of retrieval and tool-interface layers, see
 `MCP_RAG_AGENT_SKILLS.md` and `mcp_rag_skills_demo.py`.
 
+For step-by-step lab instructions, see `TUTORIALS.md`.
+
 ---
 
 ## 8. Discussion Prompts
