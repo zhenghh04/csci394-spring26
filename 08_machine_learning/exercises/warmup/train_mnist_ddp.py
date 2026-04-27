@@ -115,10 +115,11 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(script_dir, "data")
     train_dataset = datasets.MNIST(data_dir, train=True, download=(rank == 0), transform=transform)
+    test_dataset = datasets.MNIST(data_dir, train=False, download=(rank == 0), transform=transform)    
     dist.barrier()                                             #DDP: wait for rank 0 to download
     if rank != 0:
         train_dataset = datasets.MNIST(data_dir, train=True, download=False, transform=transform)
-    test_dataset = datasets.MNIST(data_dir, train=False, download=False, transform=transform)
+        test_dataset = datasets.MNIST(data_dir, train=False, download=False, transform=transform)    
 
     # ---- DDP: Use DistributedSampler to partition data across GPUs ----
     # Each GPU gets a non-overlapping 1/N slice of the dataset.

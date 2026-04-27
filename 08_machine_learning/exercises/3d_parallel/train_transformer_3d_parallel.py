@@ -116,10 +116,13 @@ class ParallelContext:
     """
 
     def __init__(self, tp_size: int, pp_size: int):
-        dist.init_process_group(backend="nccl")
+        self.local_rank  = int(os.environ.get("LOCAL_RANK", 0))
+        torch.cuda.set_device(self.local_rank)
+        self.device = torch.device(f"cuda:{self.local_rank}")
+        
+        dist.init_process_group(backend="nccl", device_id=self.device)
         self.global_rank = dist.get_rank()
         self.world_size  = dist.get_world_size()
-        self.local_rank  = int(os.environ.get("LOCAL_RANK", 0))
 
         dp_size = self.world_size // (tp_size * pp_size)
         assert tp_size * pp_size * dp_size == self.world_size, (
@@ -168,8 +171,6 @@ class ParallelContext:
                 if self.global_rank in members:
                     self.dp_group = g
 
-        torch.cuda.set_device(self.local_rank)
-        self.device = torch.device(f"cuda:{self.local_rank}")
 
     # Pipeline neighbor helpers
     def next_pp_rank(self):
@@ -541,11 +542,11 @@ def main():
 
     # Model config
     parser.add_argument("--vocab-size",  type=int, default=32000)
-    parser.add_argument("--d-model",     type=int, default=512)
+    parser.add_argument("--d-model",     type=int, default=2048)
     parser.add_argument("--num-heads",   type=int, default=8)
     parser.add_argument("--ff-dim",      type=int, default=2048)
     parser.add_argument("--num-layers",  type=int, default=8)
-    parser.add_argument("--seq-len",     type=int, default=256)
+    parser.add_argument("--seq-len",     type=int, default=8192)
     parser.add_argument("--dropout",     type=float, default=0.0,
                         help="Set to 0 for a deterministic throughput benchmark")
 

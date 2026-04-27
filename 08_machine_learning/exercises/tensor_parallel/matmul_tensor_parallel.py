@@ -52,9 +52,9 @@ def setup_distributed():
         return 0, 1, device
 
     backend = "nccl" if torch.cuda.is_available() else "gloo"
-    dist.init_process_group(backend=backend)
-    rank = dist.get_rank()
-    world_size = dist.get_world_size()
+
+
+
     local_rank = int(os.environ.get("LOCAL_RANK", 0))
 
     if torch.cuda.is_available():
@@ -62,7 +62,10 @@ def setup_distributed():
         torch.cuda.set_device(device)
     else:
         device = torch.device("cpu")
-
+    dist.init_process_group(backend=backend, device_id=device)
+    rank = dist.get_rank()    
+    world_size = dist.get_world_size()
+    os.environ["WORLD_SIZE"]=str(world_size)
     return rank, world_size, device
 
 
@@ -116,14 +119,14 @@ def matmul_tensor_parallel(A_full, B_full, rank, world_size, device):
         t_matmul_ms = e0.elapsed_time(e1)
     else:
         t_matmul_ms = 0.0
-
-    print(
-        f"[rank {rank}] K-slice [{k_start}:{k_end}]  "
-        f"A_shard {tuple(A_shard.shape)}  "
-        f"B_shard {tuple(B_shard.shape)}  "
-        f"local_C {tuple(local_C.shape)}  "
-        f"matmul={t_matmul_ms:.1f} ms"
-    )
+    if rank==0:
+        print(
+            f"[rank {rank}] K-slice [{k_start}:{k_end}]  "
+            f"A_shard {tuple(A_shard.shape)}  "
+            f"B_shard {tuple(B_shard.shape)}  "
+            f"local_C {tuple(local_C.shape)}  "
+            f"matmul={t_matmul_ms:.1f} ms"
+        )
 
     # ---- time the all-reduce ----
     t_allreduce_ms = 0.0
