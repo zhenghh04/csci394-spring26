@@ -542,11 +542,11 @@ def main():
 
     # Model config
     parser.add_argument("--vocab-size",  type=int, default=32000)
-    parser.add_argument("--d-model",     type=int, default=2048)
+    parser.add_argument("--d-model",     type=int, default=512)
     parser.add_argument("--num-heads",   type=int, default=8)
-    parser.add_argument("--ff-dim",      type=int, default=2048)
+    parser.add_argument("--ff-dim",      type=int, default=1024)
     parser.add_argument("--num-layers",  type=int, default=8)
-    parser.add_argument("--seq-len",     type=int, default=8192)
+    parser.add_argument("--seq-len",     type=int, default=2048)
     parser.add_argument("--dropout",     type=float, default=0.0,
                         help="Set to 0 for a deterministic throughput benchmark")
 
