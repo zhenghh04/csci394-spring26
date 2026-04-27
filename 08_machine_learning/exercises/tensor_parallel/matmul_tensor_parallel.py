@@ -63,7 +63,6 @@ def setup_distributed():
     dist.init_process_group(backend=backend, device_id=device)
     rank = dist.get_rank()    
     world_size = dist.get_world_size()
-    os.environ["WORLD_SIZE"]=str(world_size)
     return rank, world_size, device
 
 

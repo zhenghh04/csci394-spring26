@@ -95,3 +95,4 @@ reduce `M`, `K`, and `N` near the top of `main()`.
 Modify the script to accept `M`, `K`, and `N` as command-line arguments. Then
 run a sweep over matrix sizes and GPU counts to determine when communication
 cost dominates local compute.
+# Request 2 nodes
