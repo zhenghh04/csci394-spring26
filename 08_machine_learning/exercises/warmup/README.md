@@ -31,24 +31,6 @@ scaled_lr = base_lr * world_size
 With warmup enabled, the learning rate ramps from `base_lr` to `scaled_lr`
 over the first `warmup_epochs` epochs.
 
-## Run Locally With torchrun
-
-Use `torchrun` even for a one-GPU run because the script initializes a
-distributed process group.
-
-```bash
-torchrun --standalone --nproc_per_node=1 train_mnist_ddp.py \
-  --epochs 5 --batch-size 64 --lr 0.01 --warmup-epochs 0
-```
-
-On a multi-GPU node:
-
-```bash
-torchrun --standalone --nproc_per_node=4 train_mnist_ddp.py \
-  --epochs 5 --batch-size 64 --lr 0.01 --warmup-epochs 0
-
-torchrun --standalone --nproc_per_node=4 train_mnist_ddp.py \
-  --epochs 5 --batch-size 64 --lr 0.01 --warmup-epochs 2
 ```
 
 ## Run On Polaris
