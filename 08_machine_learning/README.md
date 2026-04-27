@@ -18,6 +18,14 @@ Contents:
 
 - `00_intro_AI/`
   What AI training is, how LLMs work, linear regression via SGD.
+- `05_llm_basics/`
+  High-level LLM concepts, Transformers, and token prediction.
+- `06_llm_training/`
+  Small-scale next-token training with character-level and GPT-2 BPE notebook examples.
+- `07_llm_distributed_training/`
+  Distributed training ideas for LLMs, including model and data parallelism.
+- `08_agentic_ai/`
+  Agentic AI as a control loop with planning, memory, and tool use.
 - `Essential_ML.md`
   Slide deck source for the machine-learning lecture.
 - `01_intro_framework/`
@@ -36,6 +44,8 @@ Contents:
   Measure timing and accuracy across batch sizes and devices.
 - `assignments/02_distributed_ml/`
   Strong-scaling or efficiency study for distributed training.
+- `assignments/03_cifar10_lr_warmup_tensor_parallel/`
+  CIFAR-10 learning-rate and warmup study plus tensor-parallel matrix multiplication.
 
 Suggested teaching order:
 
@@ -46,6 +56,10 @@ Suggested teaching order:
 4. `03_mnist_cnn`
 5. `05_gpu_training_basics`
 6. `06_distributed_training`
+7. `05_llm_basics`
+8. `06_llm_training`
+9. `07_llm_distributed_training`
+10. `08_agentic_ai`
 
 What students should learn across the whole sequence:
 
@@ -55,6 +69,7 @@ What students should learn across the whole sequence:
 - how model quality and runtime are both part of evaluation
 - how data parallel training relates to MPI-style thinking
 - how the PyTorch framework hides most low-level GPU details
+- how modern AI systems extend LLMs with planning, memory, and tools
 
 Recommended software:
 
