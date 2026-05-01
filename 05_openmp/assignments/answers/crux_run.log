@@ -1,0 +1,45 @@
+=== ALCF Crux run: CSCI394 05_openmp loopy_assignment ===
+Compute node : x1000c0s0b0n1  (256 logical cores reported by nproc)
+PBS job      : 215524  on debug queue, walltime 00:20:00, account datascience
+PBS wall     : 60 s
+Date         : 2026-04-30 (CDT)
+
+=== PBS context ===
+Host: x1000c0s0b0n1  Date: Thu Apr 30 11:34:41 PM CDT 2026
+PBS_NODEFILE=/var/spool/pbs/aux/215524.crux-pbs-0001.head.cm.crux.alcf.anl.gov
+Nodes: x1000c0s0b0n1.hostmgmt2000.cm.crux.alcf.anl.gov
+Cores reported: 256
+===================
+/opt/cray/pe/gcc-native/13/bin/gcc
+gcc (SUSE Linux) 13.3.1 20250313 [revision 4ef1d8c84faeebffeb0cc01ee22e891b41e5c4e0]
+build OK -> 21384 bytes
+
+--- OMP_NUM_THREADS=1 ---
+threads=1  N=2048  t1_init=0.014034s  t2_rowsum=0.003868s  t3a_stencil_no_collapse=0.004587s  t3b_stencil_collapse2=0.011188s  t4_total=0.003873s
+--- OMP_NUM_THREADS=2 ---
+threads=2  N=2048  t1_init=0.008140s  t2_rowsum=0.004274s  t3a_stencil_no_collapse=0.003640s  t3b_stencil_collapse2=0.004765s  t4_total=0.001913s
+--- OMP_NUM_THREADS=4 ---
+threads=4  N=2048  t1_init=0.004683s  t2_rowsum=0.002123s  t3a_stencil_no_collapse=0.003210s  t3b_stencil_collapse2=0.003313s  t4_total=0.000983s
+--- OMP_NUM_THREADS=8 ---
+threads=8  N=2048  t1_init=0.003462s  t2_rowsum=0.001053s  t3a_stencil_no_collapse=0.003193s  t3b_stencil_collapse2=0.003531s  t4_total=0.000880s
+--- OMP_NUM_THREADS=16 ---
+threads=16  N=2048  t1_init=0.002503s  t2_rowsum=0.000621s  t3a_stencil_no_collapse=0.001797s  t3b_stencil_collapse2=0.002212s  t4_total=0.000430s
+--- OMP_NUM_THREADS=32 ---
+threads=32  N=2048  t1_init=0.002038s  t2_rowsum=0.000452s  t3a_stencil_no_collapse=0.001481s  t3b_stencil_collapse2=0.001642s  t4_total=0.000270s
+--- OMP_NUM_THREADS=64 ---
+threads=64  N=2048  t1_init=0.001954s  t2_rowsum=0.000637s  t3a_stencil_no_collapse=0.001054s  t3b_stencil_collapse2=0.001216s  t4_total=0.000146s
+
+=== correctness vs 1-thread ===
+OK:   loopy_t1.dat matches loopy_t1.dat
+OK:   loopy_t2.dat matches loopy_t1.dat
+OK:   loopy_t4.dat matches loopy_t1.dat
+OK:   loopy_t8.dat matches loopy_t1.dat
+OK:   loopy_t16.dat matches loopy_t1.dat
+OK:   loopy_t32.dat matches loopy_t1.dat
+OK:   loopy_t64.dat matches loopy_t1.dat
+
+=== sample loopy_t1.dat ===
+Sample Matrix[500][500]: 1.500000
+Sample RowSums[500]:     5216.256000
+Total Sum:              25141.254000
+=== Done ===

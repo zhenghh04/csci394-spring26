@@ -1,0 +1,70 @@
+host: x3001c0s1b0n0  date: Tue Apr 28 10:30:32 PM CDT 2026
+/soft/compilers/cudatoolkit/cuda-12.2.2/bin/nvcc
+Cuda compilation tools, release 12.2, V12.2.140
+GPU 0: NVIDIA A100-SXM4-40GB (UUID: GPU-22c387d1-0d40-2cbb-2803-5c8ff8edad38)
+GPU 1: NVIDIA A100-SXM4-40GB (UUID: GPU-4948288f-eac0-a2f7-8588-e17316d8d1b0)
+nvcc -O2 -arch=sm_80 -std=c++14 -o app_cublas src/app_cublas.cu -lcublas
+src/app_cublas.cu(60): error: namespace "std" has no member "string"
+      std::string mode = argv[1];
+           ^
+
+1 error detected in the compilation of "src/app_cublas.cu".
+make: *** [Makefile:18: app_cublas] Error 2
+host: x3107c0s31b0n0  date: Tue Apr 28 11:14:34 PM CDT 2026
+/soft/compilers/cudatoolkit/cuda-12.2.2/bin/nvcc
+Cuda compilation tools, release 12.2, V12.2.140
+GPU 0: NVIDIA A100-SXM4-40GB (UUID: GPU-87bb0f54-e522-a5b4-3f05-5ab8efe62fdc)
+GPU 1: NVIDIA A100-SXM4-40GB (UUID: GPU-85cbf095-9033-9722-b64c-c587e662efcf)
+nvcc -O2 -arch=sm_80 -std=c++14 -o app_cublas src/app_cublas.cu -lcublas
+--- fp32 n=256 ---
+RESULT,fp32,256,10,2,1.597440e-05,2100.513,2.289e-05
+DETAIL,fp32,256,end_to_end_s=1.827748e-04,h2d_s=8.904748e-05,d2h_s=4.763249e-05
+--- tensor_core n=256 ---
+RESULT,tensor_core,256,10,2,8.704000e-06,3855.059,1.044e-01
+DETAIL,tensor_core,256,end_to_end_s=1.125140e-04,h2d_s=8.939765e-05,d2h_s=5.349889e-05
+--- fp32 n=512 ---
+RESULT,fp32,512,10,2,3.573760e-05,7511.289,3.815e-05
+DETAIL,fp32,512,end_to_end_s=3.824504e-04,h2d_s=2.266346e-04,d2h_s=1.349337e-04
+--- tensor_core n=512 ---
+RESULT,tensor_core,512,10,2,1.013760e-05,26479.193,2.045e-01
+DETAIL,tensor_core,512,end_to_end_s=1.259232e-04,h2d_s=2.265647e-04,d2h_s=1.506479e-04
+--- fp32 n=1024 ---
+RESULT,fp32,1024,10,2,1.664000e-04,12905.551,2.594e-04
+DETAIL,fp32,1024,end_to_end_s=1.688763e-03,h2d_s=7.651821e-04,d2h_s=4.251255e-04
+--- tensor_core n=1024 ---
+RESULT,tensor_core,1024,10,2,2.519040e-05,85250.078,4.048e-01
+DETAIL,tensor_core,1024,end_to_end_s=2.874667e-04,h2d_s=7.764958e-04,d2h_s=4.365779e-04
+--- fp32 n=2048 ---
+RESULT,fp32,2048,10,2,1.245798e-03,13790.248,3.052e-05
+DETAIL,fp32,2048,end_to_end_s=1.248170e-02,h2d_s=2.812721e-03,d2h_s=1.337881e-03
+--- tensor_core n=2048 ---
+RESULT,tensor_core,2048,10,2,1.438720e-04,119410.791,7.986e-01
+DETAIL,tensor_core,2048,end_to_end_s=1.462897e-03,h2d_s=2.846245e-03,d2h_s=1.403182e-03
+--- fp32 n=4096 ---
+RESULT,fp32,4096,10,2,9.379328e-03,14653.390,6.104e-05
+DETAIL,fp32,4096,end_to_end_s=9.381844e-02,h2d_s=1.009620e-02,d2h_s=5.075231e-03
+--- tensor_core n=4096 ---
+RESULT,tensor_core,4096,10,2,6.739968e-04,203916.335,1.580e+00
+DETAIL,tensor_core,4096,end_to_end_s=6.763716e-03,h2d_s=1.008795e-02,d2h_s=5.256260e-03
+--- fp32 n=8192 ---
+RESULT,fp32,8192,10,2,5.761792e-02,19082.807,1.221e-04
+DETAIL,fp32,8192,end_to_end_s=5.762052e-01,h2d_s=3.798936e-02,d2h_s=2.033584e-02
+--- tensor_core n=8192 ---
+RESULT,tensor_core,8192,10,2,4.852327e-03,226594.729,3.086e+00
+DETAIL,tensor_core,8192,end_to_end_s=4.854840e-02,h2d_s=3.808973e-02,d2h_s=2.056192e-02
+=== CSV ===
+mode,n,iters,warmup,gemm_s,gflops,max_abs_err
+fp32,256,10,2,1.597440e-05,2100.513,2.289e-05
+tensor_core,256,10,2,8.704000e-06,3855.059,1.044e-01
+fp32,512,10,2,3.573760e-05,7511.289,3.815e-05
+tensor_core,512,10,2,1.013760e-05,26479.193,2.045e-01
+fp32,1024,10,2,1.664000e-04,12905.551,2.594e-04
+tensor_core,1024,10,2,2.519040e-05,85250.078,4.048e-01
+fp32,2048,10,2,1.245798e-03,13790.248,3.052e-05
+tensor_core,2048,10,2,1.438720e-04,119410.791,7.986e-01
+fp32,4096,10,2,9.379328e-03,14653.390,6.104e-05
+tensor_core,4096,10,2,6.739968e-04,203916.335,1.580e+00
+fp32,8192,10,2,5.761792e-02,19082.807,1.221e-04
+tensor_core,8192,10,2,4.852327e-03,226594.729,3.086e+00
+plot: /eagle/datascience/hzheng/jobs/polaris/csci394_gpu_p2/gflops_vs_size.png
+=== compute-node DONE ===

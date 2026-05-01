@@ -1,0 +1,60 @@
+#!/bin/bash -l
+#PBS -N loopy_omp
+#PBS -A CSC249ADCD08
+#PBS -q debug
+#PBS -l select=1:ncpus=128
+#PBS -l walltime=00:30:00
+#PBS -l filesystems=home:eagle
+#PBS -j oe
+#PBS -o pbs.out
+
+# OpenMP scaling sweep for loopy_assignment on Crux (1 node, AMD EPYC).
+# Replace -A account if CSC249ADCD08 is not your project.
+
+set -euo pipefail
+
+WORKDIR="${PBS_O_WORKDIR:-$PWD}"
+cd "$WORKDIR"
+echo "=== loopy_assignment OpenMP scaling on Crux ==="
+echo "host: $(hostname)"
+echo "cwd:  $WORKDIR"
+echo "date: $(date -Is)"
+
+# Build (quiet rebuild)
+make -s clean
+make -s loopy_assignment
+echo "build OK"
+
+DIM=${DIM:-2048}
+CSV="timings.csv"
+rm -f "$CSV" loopy_t*.dat
+
+# Pin threads to cores; Crux nodes have 64 physical cores per socket × 2 sockets.
+export OMP_PLACES=cores
+export OMP_PROC_BIND=close
+
+THREADS_LIST="${THREADS_LIST:-1 2 4 8 16 32 64}"
+
+for T in $THREADS_LIST; do
+  echo "--- OMP_NUM_THREADS=$T ---"
+  OMP_NUM_THREADS=$T ./loopy_assignment \
+      --dim "$DIM" \
+      --output "loopy_t${T}.dat" \
+      --csv "$CSV"
+done
+
+echo
+echo "=== correctness vs 1-thread ==="
+for T in $THREADS_LIST; do
+  if ! diff -q "loopy_t1.dat" "loopy_t${T}.dat" >/dev/null; then
+    echo "DIFF: loopy_t${T}.dat vs loopy_t1.dat"
+    diff "loopy_t1.dat" "loopy_t${T}.dat" || true
+  else
+    echo "OK:   loopy_t${T}.dat matches loopy_t1.dat"
+  fi
+done
+
+echo
+echo "=== timings.csv ==="
+cat "$CSV"
+echo "=== done ==="

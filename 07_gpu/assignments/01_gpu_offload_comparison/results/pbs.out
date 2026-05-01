@@ -1,0 +1,167 @@
+host: x3001c0s1b0n0  date: Tue Apr 28 10:26:14 PM CDT 2026
+
+Lmod is automatically replacing "PrgEnv-nvidia/8.6.0" with
+"PrgEnv-nvhpc/8.5.0".
+
+Lmod has detected the following error: The following module(s) are unknown:
+"nvhpc"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "nvhpc"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+host: x3004c0s1b1n0  date: Tue Apr 28 11:10:59 PM CDT 2026
+/opt/cray/pe/craype/2.7.35/bin/cc
+/soft/compilers/cudatoolkit/cuda-12.2.2/bin/nvcc
+
+Cuda compilation tools, release 12.2, V12.2.140
+torch 2.3.0 cuda? True
+=== build ===
+cc -O2 -mp -fast -o app_cpu src/app_cpu.c
+cc -O2 -acc -gpu=cc80 -Minfo=accel -o app_openacc src/app_openacc.c
+main:
+     30, Generating copyin(a[:nn]) [if not already present]
+         Generating copyout(c[:nn]) [if not already present]
+         Generating copyin(b[:nn]) [if not already present]
+         Generating implicit firstprivate(n)
+         Generating NVIDIA GPU code
+         32, #pragma acc loop gang collapse(2) /* blockIdx.x */
+         33,   /* blockIdx.x collapsed */
+         35, #pragma acc loop vector(128) /* threadIdx.x */
+             Generating implicit reduction(+:s)
+     35, Loop is parallelizable
+     47, Generating enter data create(c[:nn])
+         Generating enter data copyin(b[:nn],a[:nn])
+     48, Generating present(a[:nn],c[:nn],b[:nn])
+         Generating implicit firstprivate(n)
+         Generating NVIDIA GPU code
+         50, #pragma acc loop gang collapse(2) /* blockIdx.x */
+         51,   /* blockIdx.x collapsed */
+         53, #pragma acc loop vector(128) /* threadIdx.x */
+             Generating implicit reduction(+:s)
+     53, Loop is parallelizable
+     60, Generating exit data delete(a[:nn],b[:nn])
+         Generating exit data copyout(c[:nn])
+cc -O2 -mp=gpu -gpu=cc80 -Minfo=mp -o app_omp_target src/app_omp_target.c
+main:
+     24, #omp target teams distribute parallel for
+         24, Generating "nvkernel_main_F1L24_2" GPU kernel
+         27, Loop parallelized across teams and threads(128), schedule(static)
+     24, Generating map(to:a[:nn],b[:nn]) 
+         Generating map(from:c[:nn]) 
+     42, Generating target enter data map(create: c[:nn])
+         Generating target enter data map(to: b[:nn],a[:nn])
+     43, #omp target teams distribute parallel for
+         43, Generating "nvkernel_main_F1L43_4" GPU kernel
+         46, Loop parallelized across teams and threads(128), schedule(static)
+     43, Generating map(to:a[:nn]) 
+         Generating map(from:c[:nn]) 
+         Generating map(to:b[:nn]) 
+     56, Generating target exit data map(delete: a[:nn]) finalize
+         Generating target exit data map(from: c[:nn])
+         Generating target exit data map(delete: b[:nn]) finalize
+nvcc -O2 -arch=sm_80 -std=c++14 -Isrc -o app_cuda src/app_cuda.cu
+--- cpu n=256 ---
+RESULT,cpu,256,5,1,6.144524e-04,6.142616e-04,0.000e+00
+--- openacc n=256 ---
+RESULT,openacc,256,5,1,3.762245e-04,2.837658e-04,7.629e-06
+DETAIL,openacc,256,h2d_s=5.340576e-05,d2h_s=3.867149e-05
+--- omp_target n=256 ---
+RESULT,omp_target,256,5,1,1.238346e-04,2.965927e-05,2.289e-05
+DETAIL,omp_target,256,h2d_s=5.478859e-05,d2h_s=3.938675e-05
+--- cuda n=256 ---
+RESULT,cuda,256,5,1,3.264518e-04,2.624640e-05,3.815e-06
+DETAIL,cuda,256,h2d_s=5.145017e-05,d2h_s=3.406964e-05
+--- pytorch n=256 ---
+RESULT,pytorch,256,5,1,3.149247e-04,4.334080e-05,7.629e-06
+DETAIL,pytorch,256,h2d_s=1.038508e-04,d2h_s=1.335228e-04,device=cuda
+--- cpu n=512 ---
+RESULT,cpu,512,5,1,9.158564e-03,9.158373e-03,0.000e+00
+--- openacc n=512 ---
+RESULT,openacc,512,5,1,2.058649e-03,1.745796e-03,3.052e-05
+DETAIL,openacc,512,h2d_s=1.806259e-04,d2h_s=1.320362e-04
+--- omp_target n=512 ---
+RESULT,omp_target,512,5,1,4.355907e-04,1.367092e-04,3.815e-05
+DETAIL,omp_target,512,h2d_s=1.728058e-04,d2h_s=1.252174e-04
+--- cuda n=512 ---
+RESULT,cuda,512,5,1,7.902658e-04,1.113792e-04,7.629e-06
+DETAIL,cuda,512,h2d_s=1.578636e-04,d2h_s=1.158372e-04
+--- pytorch n=512 ---
+RESULT,pytorch,512,5,1,7.856026e-04,6.119680e-05,3.052e-05
+DETAIL,pytorch,512,h2d_s=2.440996e-04,d2h_s=4.459241e-04,device=cuda
+--- cpu n=1024 ---
+RESULT,cpu,1024,5,1,2.018328e-01,2.018326e-01,0.000e+00
+--- openacc n=1024 ---
+RESULT,openacc,1024,5,1,1.505599e-02,1.408958e-02,3.052e-05
+DETAIL,openacc,1024,h2d_s=5.813599e-04,d2h_s=3.846169e-04
+--- omp_target n=1024 ---
+RESULT,omp_target,1024,5,1,1.950979e-03,1.010752e-03,2.441e-04
+DETAIL,omp_target,1024,h2d_s=5.762577e-04,d2h_s=3.639698e-04
+--- cuda n=1024 ---
+RESULT,cuda,1024,5,1,2.418318e-03,8.984960e-04,1.526e-05
+DETAIL,cuda,1024,h2d_s=5.699966e-04,d2h_s=3.707234e-04
+--- pytorch n=1024 ---
+RESULT,pytorch,1024,5,1,2.188389e-03,1.912960e-04,6.104e-05
+DETAIL,pytorch,1024,h2d_s=5.746515e-04,d2h_s=1.387878e-03,device=cuda
+--- cpu n=2048 ---
+RESULT,cpu,2048,5,1,2.091471e+00,2.091471e+00,0.000e+00
+--- openacc n=2048 ---
+RESULT,openacc,2048,5,1,9.664516e-02,9.291124e-02,6.104e-05
+DETAIL,openacc,2048,h2d_s=2.414989e-03,d2h_s=1.318741e-03
+--- omp_target n=2048 ---
+RESULT,omp_target,2048,5,1,1.003218e-02,6.308174e-03,1.129e-03
+DETAIL,omp_target,2048,h2d_s=2.410793e-03,d2h_s=1.313019e-03
+--- cuda n=2048 ---
+RESULT,cuda,2048,5,1,1.157429e-02,6.998330e-03,3.052e-05
+DETAIL,cuda,2048,h2d_s=2.587820e-03,d2h_s=1.344207e-03
+--- pytorch n=2048 ---
+RESULT,pytorch,2048,5,1,6.231518e-03,1.273030e-03,1.129e-03
+DETAIL,pytorch,2048,h2d_s=1.999994e-03,d2h_s=2.920883e-03,device=cuda
+--- cpu n=4096 ---
+RESULT,cpu,4096,2,1,3.182859e+01,3.182859e+01,0.000e+00
+--- openacc n=4096 ---
+RESULT,openacc,4096,5,1,8.331510e-01,8.186737e-01,1.221e-04
+DETAIL,openacc,4096,h2d_s=9.321022e-03,d2h_s=5.156136e-03
+--- omp_target n=4096 ---
+RESULT,omp_target,4096,5,1,8.331447e-02,6.887546e-02,4.883e-04
+DETAIL,omp_target,4096,h2d_s=9.314966e-03,d2h_s=5.123663e-03
+--- cuda n=4096 ---
+RESULT,cuda,4096,5,1,7.504827e-02,5.652244e-02,6.104e-05
+DETAIL,cuda,4096,h2d_s=1.216856e-02,d2h_s=5.563173e-03
+--- pytorch n=4096 ---
+RESULT,pytorch,4096,5,1,2.666097e-02,9.315123e-03,7.324e-04
+DETAIL,pytorch,4096,h2d_s=7.706446e-03,d2h_s=9.599336e-03,device=cuda
+=== CSV ===
+version,n,iters,warmup,end_to_end_s,compute_s,max_abs_err
+cpu,256,5,1,6.144524e-04,6.142616e-04,0.000e+00
+openacc,256,5,1,3.762245e-04,2.837658e-04,7.629e-06
+omp_target,256,5,1,1.238346e-04,2.965927e-05,2.289e-05
+cuda,256,5,1,3.264518e-04,2.624640e-05,3.815e-06
+pytorch,256,5,1,3.149247e-04,4.334080e-05,7.629e-06
+cpu,512,5,1,9.158564e-03,9.158373e-03,0.000e+00
+openacc,512,5,1,2.058649e-03,1.745796e-03,3.052e-05
+omp_target,512,5,1,4.355907e-04,1.367092e-04,3.815e-05
+cuda,512,5,1,7.902658e-04,1.113792e-04,7.629e-06
+pytorch,512,5,1,7.856026e-04,6.119680e-05,3.052e-05
+cpu,1024,5,1,2.018328e-01,2.018326e-01,0.000e+00
+openacc,1024,5,1,1.505599e-02,1.408958e-02,3.052e-05
+omp_target,1024,5,1,1.950979e-03,1.010752e-03,2.441e-04
+cuda,1024,5,1,2.418318e-03,8.984960e-04,1.526e-05
+pytorch,1024,5,1,2.188389e-03,1.912960e-04,6.104e-05
+cpu,2048,5,1,2.091471e+00,2.091471e+00,0.000e+00
+openacc,2048,5,1,9.664516e-02,9.291124e-02,6.104e-05
+omp_target,2048,5,1,1.003218e-02,6.308174e-03,1.129e-03
+cuda,2048,5,1,1.157429e-02,6.998330e-03,3.052e-05
+pytorch,2048,5,1,6.231518e-03,1.273030e-03,1.129e-03
+cpu,4096,2,1,3.182859e+01,3.182859e+01,0.000e+00
+openacc,4096,5,1,8.331510e-01,8.186737e-01,1.221e-04
+omp_target,4096,5,1,8.331447e-02,6.887546e-02,4.883e-04
+cuda,4096,5,1,7.504827e-02,5.652244e-02,6.104e-05
+pytorch,4096,5,1,2.666097e-02,9.315123e-03,7.324e-04
+plot: /eagle/datascience/hzheng/jobs/polaris/csci394_gpu_p1/runtime_vs_size.png
+=== compute-node DONE ===
