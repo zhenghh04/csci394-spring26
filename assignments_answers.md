@@ -6,7 +6,7 @@ Map from the Canvas coursework items to the local answer, submission, or support
 
 | Canvas item | Due | Pts | Repo map |
 |---|---:|---:|---|
-| Assignment 01 - Class Survey Form (Due Wednesday 1/21) | Jan 21, 2026 8:00am | 100 | No local assignment folder found |
+| Assignment 01 - Class Survey Form (Due Wednesday 1/21) | Jan 21, 2026 8:00am | 100 | [Class survey form](https://forms.gle/uFmWAyiQ1sAaMFVaA) |
 | Assignment 02 - ALCF Account and Software Environment | Jan 21, 2026 11:59pm | 100 | [00_linux_env](00_linux_env), [00_pbs](00_pbs) |
 | Assignment 03 - Soft Env setup and my first MPI program (In class exercise on 1/21) | Jan 23, 2026 8:00am | 100 | [01_mpi_pi/assignment](01_mpi_pi/assignment) |
 | Assignment 04 - Running pi example on ALCF Supercomputers | Feb 4, 2026 10:00am | 100 | [01_mpi_pi/assignment/answers](01_mpi_pi/assignment/answers) |
