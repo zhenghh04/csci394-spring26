@@ -1,0 +1,13 @@
+=== MacBook Pro M1 Max scaling pi_mpi4py.py samples=100000000 (MPICH 4.3.0) ===
+>>> n=1
+procs=1 samples=100000000 hits=78536872 pi=3.14147488 time_s=9.343067
+>>> n=2
+procs=2 samples=100000000 hits=78539839 pi=3.14159356 time_s=4.612421
+>>> n=4
+procs=4 samples=100000000 hits=78546745 pi=3.14186980 time_s=2.323300
+>>> n=8
+procs=8 samples=100000000 hits=78546039 pi=3.14184156 time_s=1.656060
+>>> n=16
+procs=16 samples=100000000 hits=78541643 pi=3.14166572 time_s=1.304211
+>>> n=32
+procs=32 samples=100000000 hits=78538842 pi=3.14155368 time_s=1.492965

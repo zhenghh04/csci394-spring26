@@ -1,0 +1,23 @@
+=== Aurora scaling pi_mpi4py.py samples=100000000 ===
+ALCF Aurora — 1 node, Intel Xeon CPU Max (Sapphire Rapids), 104 cores
+ClearML task: d1b054f2323744c986087413ad9aeb1c (queue=debug, account=gpu_hack, PBS jobid 8463413)
+Python /opt/aurora/26.26.0/frameworks/aurora_frameworks-2025.3.1/bin/python (3.12.12)
+mpiexec /opt/cray/pals/1.8/bin/mpiexec  (PYTHONNOUSERSITE=1 to bypass torchtitan .pth SRE_MAGIC trap)
+
+>>> n=1
+procs=1 samples=100000000 hits=78536872 pi=3.14147488 time_s=7.605247
+>>> n=2
+procs=2 samples=100000000 hits=78539839 pi=3.14159356 time_s=3.850252
+>>> n=4
+procs=4 samples=100000000 hits=78546745 pi=3.14186980 time_s=2.052832
+>>> n=8
+procs=8 samples=100000000 hits=78546039 pi=3.14184156 time_s=1.116085
+>>> n=16
+procs=16 samples=100000000 hits=78541643 pi=3.14166572 time_s=0.510211
+>>> n=32
+procs=32 samples=100000000 hits=78538842 pi=3.14155368 time_s=0.311382
+>>> n=64
+procs=64 samples=100000000 hits=78538686 pi=3.14154744 time_s=0.204888
+>>> n=104
+procs=104 samples=100000000 hits=78542514 pi=3.14170056 time_s=0.216370
+=== DONE ===

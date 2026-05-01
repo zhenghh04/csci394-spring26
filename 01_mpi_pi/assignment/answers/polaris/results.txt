@@ -1,0 +1,18 @@
+=== Polaris scaling pi_mpi4py.py samples=100000000 ===
+>>> n=1
+procs=1 samples=100000000 hits=78536872 pi=3.14147488 time_s=10.287750
+>>> n=2
+procs=2 samples=100000000 hits=78539839 pi=3.14159356 time_s=5.150075
+>>> n=4
+procs=4 samples=100000000 hits=78546745 pi=3.14186980 time_s=2.634501
+>>> n=8
+procs=8 samples=100000000 hits=78546039 pi=3.14184156 time_s=1.709906
+>>> n=16
+procs=16 samples=100000000 hits=78541643 pi=3.14166572 time_s=0.737997
+>>> n=32
+procs=32 samples=100000000 hits=78538842 pi=3.14155368 time_s=0.482086
+>>> n=64
+procs=64 samples=100000000 hits=78538686 pi=3.14154744 time_s=0.414496
+>>> n=128
+procs=128 samples=100000000 hits=78541657 pi=3.14166628 time_s=0.393707
+=== DONE ===

@@ -1,0 +1,14 @@
+>>> n=1
+procs=1 samples=100000000 hits=78536872 pi=3.14147488 time_s=9.343067
+>>> n=2
+procs=2 samples=100000000 hits=78539839 pi=3.14159356 time_s=4.612421
+>>> n=4
+procs=4 samples=100000000 hits=78546745 pi=3.14186980 time_s=2.323300
+>>> n=8
+procs=8 samples=100000000 hits=78546039 pi=3.14184156 time_s=1.656060
+>>> n=16
+[mpiexec@zion] match_arg (lib/utils/args.c:166): unrecognized argument oversubscribe
+[mpiexec@zion] HYDU_parse_array (lib/utils/args.c:181): argument matching returned error
+[mpiexec@zion] parse_args (mpiexec/get_parameters.c:313): error parsing input array
+[mpiexec@zion] HYD_uii_mpx_get_parameters (mpiexec/get_parameters.c:48): unable to parse user arguments
+[mpiexec@zion] main (mpiexec/mpiexec.c:54): error parsing parameters
