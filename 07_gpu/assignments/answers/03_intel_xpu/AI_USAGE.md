@@ -6,8 +6,8 @@
 
 > Note: the assignment specifically asks for ChatGPT or AskALCF as the AI
 > source. Claude Code was used instead because it is the active CLI in the
-> environment and can also drive the Aurora job submission via ClearML in the
-> same flow. The prompt + first-draft + manual fixes pattern is preserved.
+> environment and can also drive the Aurora job submission in the same flow.
+> The prompt + first-draft + manual fixes pattern is preserved.
 
 ## Prompt (verbatim)
 

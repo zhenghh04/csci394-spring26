@@ -30,15 +30,12 @@ model, and what was changed manually.
 
 ## How the runs were dispatched
 
-- **Project 01**: ClearML task `csci394_p1_offload_compare` →
-  `polaris-services` queue → orchestrator on Polaris login node →
-  `qsub` to PBS `debug` queue → 1× A100 compute node →
-  build (NVHPC + nvcc + ALCF conda PyTorch) → sweep n=256..4096 → CSV + plot.
-- **Project 02**: same pattern, ClearML task `csci394_p2_cublas_gemm_v3` →
-  `polaris-services` → PBS `debug` queue → A100 → build (nvcc + cuBLAS) →
-  sweep n=256..8192 → CSV + plot.
-- **Project 03**: ClearML task `csci394_p3_xpu_gemm_v4` →
-  `aurora-services` queue → orchestrator on Aurora login node →
+- **Project 01**: Polaris service-side runner → generated PBS script →
+  `qsub` to PBS `debug` queue → 1 A100 compute node → build
+  (NVHPC + nvcc + ALCF conda PyTorch) → sweep n=256..4096 → CSV + plot.
+- **Project 02**: Polaris service-side runner → PBS `debug` queue → A100 →
+  build (nvcc + cuBLAS) → sweep n=256..8192 → CSV + plot.
+- **Project 03**: Aurora service-side runner → generated PBS script →
   `qsub` to PBS `debug` queue → 1 PVC node → build (icpx -fsycl) → sweep
   n=256..4096 → CSV + plot.
 
@@ -54,7 +51,7 @@ your own ALCF allocation:
 ```bash
 # Polaris (Project 01 / 02)
 cd jobs/polaris/csci394_gpu_p1
-qsub run.sh                # or use ClearML services queue
+qsub run.sh
 
 # Aurora (Project 03)
 cd jobs/aurora/csci394_gpu_p3

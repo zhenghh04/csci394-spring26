@@ -25,8 +25,8 @@ For Project 01 it generated:
 6. `src/app_pytorch.py` — Torch `@` operator on GPU with `cuda.Event` for
    compute timing and `cpu()` round trip for transfer time.
 7. `Makefile` with NVHPC-compatible defaults (`nvc`, `nvcc`, `cc80`).
-8. A `polaris-services` orchestrator script (`run.sh`) that emits a child PBS
-   script for the `debug` queue, waits for the PBS job, and plots `results.csv`.
+8. A Polaris job script workflow that emits a child PBS script for the `debug`
+   queue, waits for the PBS job, and plots `results.csv`.
 
 ## What was changed / verified manually
 
@@ -36,9 +36,8 @@ For Project 01 it generated:
   n=4096 on the CPU would take longer than the actual benchmark.
 - Used CUDA events (not host wall clock) for the CUDA compute-only timing.
 - Capped the CPU baseline at n=2048 with full iters; n=4096 runs only 2 iters.
-- Routed everything through ClearML `polaris-services` because the IRI token in
-  `.env` was truncated/expired (`401 Unauthorized` on
-  `/api/v1/account/projects`).
+- Ran the benchmark through a generated PBS job on Polaris after the direct IRI
+  API path failed with an expired/truncated token.
 
 ## What did not work first try / lessons
 
