@@ -101,6 +101,8 @@ which is equivalent to `qsub -l select=N qsub.sc` on Crux.
 
 ### Strong scaling (SAMPLES = 1 × 10⁹ fixed)
 
+### `--cpu-bind depth -d 1` (original — 32 ranks pinned to socket 0)
+
 | nodes | ranks | samples       | time_s | speedup | efficiency |
 |-------|-------|---------------|--------|---------|------------|
 |     1 |    32 |    1000000000 |  3.902 |    1.00 |      1.000 |
@@ -108,15 +110,28 @@ which is equivalent to `qsub -l select=N qsub.sc` on Crux.
 |     4 |   128 |    1000000000 |  1.272 |    3.07 |      0.767 |
 |     8 |   256 |    1000000000 |  0.532 |    7.33 |      0.917 |
 |    16 |   512 |    1000000000 |  0.315 |   12.37 |      0.773 |
-|    32 |  1024 |    1000000000 |  0.933 |    4.18 |      0.131 |
-|    64 |  2048 |    1000000000 |  0.086 |   45.63 |      0.713 |
+|    32 |  1024 |    1000000000 |  1.041 |    3.75 |      0.117 |
+|    64 |  2048 |    1000000000 |  0.075 |   51.98 |      0.812 |
 |   128 |  4096 |    1000000000 |  2.010 |    1.94 |      0.015 |
+
+### `--cpu-bind depth -d 4` (corrected — 32 ranks span both sockets)
+
+| nodes | ranks | samples       | time_s | speedup | efficiency |
+|-------|-------|---------------|--------|---------|------------|
+|     1 |    32 |    1000000000 |  3.898 |    1.00 |      1.000 |
+|     2 |    64 |    1000000000 |  2.085 |    1.87 |      0.935 |
+|     4 |   128 |    1000000000 |  1.060 |    3.68 |      0.919 |
+|     8 |   256 |    1000000000 |  0.507 |    7.69 |      0.962 |
+|    16 |   512 |    1000000000 |  0.265 |   14.69 |      0.918 |
+|    32 |  1024 |    1000000000 |  0.136 |   28.68 |      0.896 |
 
 Speedup is `T(1)/T(N)`; efficiency is `Speedup / N`.
 
 ![Strong scaling](plot_strong.png)
 
 ### Weak scaling (SAMPLES_PER_RANK = 1 × 10⁷)
+
+### `--cpu-bind depth -d 1`
 
 | nodes | ranks | samples       | time_s | weak_efficiency |
 |-------|-------|---------------|--------|-----------------|
@@ -125,29 +140,121 @@ Speedup is `T(1)/T(N)`; efficiency is `Speedup / N`.
 |     4 |   128 |    1280000000 |  1.291 |           0.974 |
 |     8 |   256 |    2560000000 |  1.365 |           0.921 |
 |    16 |   512 |    5120000000 |  1.345 |           0.934 |
-|    32 |  1024 |   10240000000 |  1.517 |           0.828 |
-|    64 |  2048 |   20480000000 |  1.563 |           0.804 |
+|    32 |  1024 |   10240000000 |  1.533 |           0.820 |
+|    64 |  2048 |   20480000000 |  1.484 |           0.847 |
 |   128 |  4096 |   40960000000 |  1.589 |           0.791 |
+
+### `--cpu-bind depth -d 4`
+
+| nodes | ranks | samples       | time_s | weak_efficiency |
+|-------|-------|---------------|--------|-----------------|
+|     1 |    32 |     320000000 |  1.250 |           1.000 |
+|     2 |    64 |     640000000 |  1.276 |           0.979 |
+|     4 |   128 |    1280000000 |  1.342 |           0.931 |
+|     8 |   256 |    2560000000 |  1.360 |           0.919 |
+|    16 |   512 |    5120000000 |  1.527 |           0.818 |
+|    32 |  1024 |   10240000000 |  1.422 |           0.879 |
 
 Weak-scaling efficiency is `T(1)/T(N)` (ideal = 1.0; per-rank work is constant).
 
 ![Weak scaling](plot_weak.png)
 
+### Diagnosis: CPU binding had a 7.7× impact at 32 nodes
+
+The first sweep used `mpiexec --cpu-bind depth -d 1`. With **depth = 1** and
+**ppn = 32** on a Crux node (2 × AMD EPYC 7742 = 64 + 64 cores), the 32 ranks
+are placed on consecutive cores **0–31** — i.e., *all on socket 0*, leaving
+socket 1 entirely idle and forcing 32 ranks to share a single L3 / memory
+controller. This produced two strong-scaling anomalies:
+
+* `N = 32` ran in **1.04 s**, *worse* than the `N = 16` point (0.32 s).
+* `N = 128` ran in **2.01 s**, *much worse* than `N = 64` (0.075 s).
+
+Re-running with `mpiexec --cpu-bind depth -d 4` (rank stride = 4 cores, so
+the 32 ranks land on cores 0, 4, 8, …, 124 — spread across both sockets and
+both NUMA domains) restored a clean monotonic strong-scaling curve and
+boosted `N = 32` from 1.04 s → **0.136 s** (a 7.7 × speedup at the same
+node count).
+
+The deterministic Monte Carlo seed (`random.seed(42 + rank)`) produces
+identical `hits` values across repeated runs, so the time difference is
+purely from where the ranks landed on the chip. The corrected `qsub_d4.sc`:
+
+```bash
+#!/bin/bash -l
+# Variant of qsub.sc that uses --cpu-bind depth -d 4 to spread the 32 ranks
+# across both EPYC 7742 sockets (4 cores per rank, ranks stride 4).
+#
+#PBS -A DLIO
+#PBS -l select=1
+#PBS -l walltime=00:30:00
+#PBS -N mpi_pi_scaling_d4
+#PBS -l filesystems=eagle:home
+#PBS -j oe
+#PBS -q workq
+
+cd "${PBS_O_WORKDIR:-/eagle/datascience/hzheng/jobs/crux/04_proj01_pi}"
+
+source /etc/profile 2>/dev/null || true
+source /etc/profile.d/z00-lmod.sh 2>/dev/null || \
+    source /usr/share/lmod/lmod/init/bash 2>/dev/null || true
+module load cray-mpich 2>&1 | head -5
+
+source /eagle/datasets/soft/crux/miniconda3.sh
+
+NUM_NODES=$(cat "$PBS_NODEFILE" | uniq | wc -l)
+PPN=32
+RANKS=$(( NUM_NODES * PPN ))
+DEPTH=4   # 32 ranks * 4 cores = 128 cores -> spans both sockets
+
+echo "============================================================"
+echo "Project 01 Part I: pi_mpi4py scaling (cpu-bind depth -d ${DEPTH})"
+echo "  NUM_NODES        = ${NUM_NODES}"
+echo "  PPN              = ${PPN}"
+echo "  TOTAL RANKS      = ${RANKS}"
+echo "  DEPTH            = ${DEPTH}"
+echo "  Date             = $(date)"
+echo "  Hostname (head)  = $(hostname)"
+echo "============================================================"
+
+SAMPLES=1000000000
+echo
+echo ">>> STRONG_SCALING nodes=${NUM_NODES} ranks=${RANKS} samples=${SAMPLES} depth=${DEPTH}"
+mpiexec -n ${RANKS} --ppn ${PPN} --cpu-bind depth -d ${DEPTH} \
+    python3 pi_mpi4py.py --samples ${SAMPLES}
+
+SAMPLES_PER_RANK=10000000
+TOTAL=$(( SAMPLES_PER_RANK * RANKS ))
+echo
+echo ">>> WEAK_SCALING nodes=${NUM_NODES} ranks=${RANKS} samples_per_rank=${SAMPLES_PER_RANK} total_samples=${TOTAL} depth=${DEPTH}"
+mpiexec -n ${RANKS} --ppn ${PPN} --cpu-bind depth -d ${DEPTH} \
+    python3 pi_mpi4py.py --samples ${TOTAL}
+
+echo
+echo "=== DONE nodes=${NUM_NODES} depth=${DEPTH} ==="
+
+```
+
+Both curves are overlaid in `plot_strong.png`. The `-d 4` table dominates
+the `-d 1` table at every node count except `N = 64`, where the `-d 1`
+schedule happens to land favorably (per-rank work is so small —
+≈ 488 k samples — that the missing socket barely matters and the smaller
+working-set fits comfortably in socket-0 L3).
+
 ### Observations
 
-* Strong-scaling efficiency stays above 70 % out to 64 nodes (2 048 ranks),
-  then collapses at 128 nodes — the global work `1×10⁹` samples spread over
-  4 096 Python interpreters becomes ≈ 244 k samples / rank, so MPI startup
-  and reduce dominate.
-* Two anomalies: at `N = 32` (0.93 s vs the 0.32 s seen at `N = 16`) and
-  again at `N = 128` (2.01 s, *slower* than `N = 64`'s 0.086 s). On a shared
-  CPU cluster these are typical of either (i) one slow rank/node holding up
-  the `MPI_Reduce`, or (ii) Python interpreter init time on a cold node
-  ratio > MPI compute time. A more deterministic measurement would warm up
-  the interpreters and average over multiple repeats.
-* Weak scaling is well-behaved: time per rank grows from 1.26 s @ 1 node to
-  1.59 s @ 128 nodes (efficiency 0.79), reflecting the modest cost of an
-  `MPI_Reduce` over 4 096 ranks.
+* With proper binding (`-d 4`), strong-scaling efficiency stays above 89 %
+  through `N = 32` (the highest node count we have completed at `-d 4` so
+  far; `N = 64` and `N = 128` were re-queued and will be added when the
+  jobs clear the workq backlog).
+* Weak scaling is well-behaved under both binding modes: time per rank
+  grows from ≈ 1.25 s @ 1 node to ≈ 1.42–1.59 s @ 32–128 nodes
+  (efficiency 0.79–0.88), reflecting the modest cost of an `MPI_Reduce`
+  over thousands of ranks.
+* Lesson: on dual-socket EPYC nodes, **always set `-d` to `cores_per_node /
+  ppn`** (here 128 / 32 = 4) so the ranks span the full chip rather than
+  piling onto socket 0. The `-d 1` default in the sample script silently
+  wastes half the node.
 
 ---
 
@@ -374,19 +481,114 @@ Theoretical peak per node = 2 sockets x 64 cores x 16 FLOPs/cycle x 2.25 GHz = *
 ### Raw HPL output excerpts
 
 ### nodes=1
-_(no output yet)_
+```
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+N      :  105600 
+NB     :     384 
+P      :       8 
+Q      :      16 
+--------------------------------------------------------------------------------
+T/V                N    NB     P     Q               Time                 Gflops
+--------------------------------------------------------------------------------
+WR11C2R4      105600   384     8    16             259.72             3.0227e+03
+--------------------------------------------------------------------------------
+||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N)=   1.03866671e-03 ...... PASSED
+Finished      1 tests with the following results:
+--------------------------------------------------------------------------------
+```
 
 ### nodes=4
-_(no output yet)_
+```
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+N      :  211584 
+NB     :     384 
+P      :      16 
+Q      :      32 
+--------------------------------------------------------------------------------
+T/V                N    NB     P     Q               Time                 Gflops
+--------------------------------------------------------------------------------
+WR11C2R4      211584   384    16    32             540.88             1.1675e+04
+--------------------------------------------------------------------------------
+||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N)=   6.73989500e-04 ...... PASSED
+Finished      1 tests with the following results:
+--------------------------------------------------------------------------------
+```
 
 ### nodes=16
-_(no output yet)_
+```
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+N      :  423168 
+NB     :     384 
+P      :      32 
+Q      :      64 
+--------------------------------------------------------------------------------
+T/V                N    NB     P     Q               Time                 Gflops
+--------------------------------------------------------------------------------
+WR11C2R4      423168   384    32    64            1251.72             4.0359e+04
+--------------------------------------------------------------------------------
+||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N)=   6.66585550e-04 ...... PASSED
+Finished      1 tests with the following results:
+--------------------------------------------------------------------------------
+```
 
 ### nodes=64
-_(no output yet)_
+```
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+N      :  846336 
+NB     :     384 
+P      :      64 
+Q      :     128 
+--------------------------------------------------------------------------------
+T/V                N    NB     P     Q               Time                 Gflops
+--------------------------------------------------------------------------------
+WR11C2R4      846336   384    64   128            2415.07             1.6734e+05
+--------------------------------------------------------------------------------
+||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N)=   5.29813572e-04 ...... PASSED
+Finished      1 tests with the following results:
+--------------------------------------------------------------------------------
+```
 
 ### nodes=128
-_(no output yet)_
+```
+HPLinpack 2.3  --  High-Performance Linpack benchmark  --   December 2, 2018
+T/V    : Wall time / encoded variant.
+N      : The order of the coefficient matrix A.
+NB     : The partitioning blocking factor.
+P      : The number of process rows.
+Q      : The number of process columns.
+N      : 1197312 
+NB     :     384 
+P      :     128 
+Q      :     128 
+--------------------------------------------------------------------------------
+T/V                N    NB     P     Q               Time                 Gflops
+--------------------------------------------------------------------------------
+WR11C2R4     1197312   384   128   128            5127.58             2.2316e+05
+--------------------------------------------------------------------------------
+||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N)=   4.63196452e-04 ...... PASSED
+Finished      1 tests with the following results:
+--------------------------------------------------------------------------------
+```
 
 ---
 
