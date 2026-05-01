@@ -98,7 +98,102 @@ points (`time` in seconds, `GFLOP/s = 2 n³ / compute_s / 1e9`):
    same source — `nvc -acc` does not appear to vectorize the inner k-loop
    the same way `-mp=gpu` does. CUDA-naive is competitive with OpenMP
    target. PyTorch (cuBLAS) is 5–10× faster than the hand-written kernels
-   because it engages the optimized tiled GEMM path.
+   because it engages the optimized tiled GEMM path. (See **Follow-up**
+   below for the actual root cause and a one-line fix.)
+
+## Follow-up: why was OpenACC ~12× slower than OpenMP target?
+
+The 12× gap between OpenACC and OpenMP target on the *same* source seemed
+larger than auto-scheduler differences should explain. Re-ran the kernel
+on Sirius (also A100-SXM4-40GB, NVHPC 25.5, cc80 — identical architecture
+and compiler family to Polaris) with four scheduling variants of the same
+naive triple loop, capturing `-Minfo=accel` for each.
+
+### Variants tested
+
+| ID | Pragma                                                     |
+|----|------------------------------------------------------------|
+| v0 | `#pragma acc parallel loop collapse(2)` *(assignment)*     |
+| v1 | `#pragma acc parallel loop collapse(2) gang vector(128)`   |
+| v2 | `#pragma acc parallel loop tile(16,16)`                    |
+| v3 | `#pragma acc parallel loop tile(32,32)`                    |
+
+### Sirius A100 results (kernel-only `compute_s`)
+
+| variant | n=1024 (GFLOP/s) | n=2048 | n=4096 | speedup over v0 |
+|---|---|---|---|---|
+| v0 default `collapse(2)`        | 152  | 194  | 168  | 1×       |
+| v1 `collapse(2) gang vector(128)` | —    | —    | —    | **build error** |
+| v2 `tile(16,16)`                | 2873 | 3111 | 2716 | **~16×** |
+| v3 `tile(32,32)`                | 2537 | 2720 | 3196 | **~17×** |
+
+For reference, this assignment's OpenMP target / CUDA at n=4096 hit
+~990 / 1190 GFLOP/s — `tile(16,16)` actually beats both.
+
+### Root cause — what `-Minfo=accel` revealed
+
+**v0 (the assignment's pragma):** NVHPC mapped the loops as
+
+```
+19, #pragma acc loop gang collapse(2)   /* blockIdx.x */
+21, #pragma acc loop vector(128)        /* threadIdx.x */
+    Generating implicit reduction(+:s)
+```
+
+That is, the outer (i,j) pair was collapsed to **gang** (one block per
+output element), and the **inner k-reduction loop** was mapped to
+`vector(128)` with an **implicit cross-thread reduction**. Pathological
+shape: 16M blocks at n=4096, each computing one c[i][j] via a 128-thread
+shared-memory reduction tree over k. Tons of intra-block synchronization,
+no operand reuse, and far too many tiny blocks.
+
+**v2/v3 (`tile(16,16)`/`tile(32,32)`):** NVHPC mapped the (i,j) tile to
+gang+vector and left k sequential per thread:
+
+```
+19, #pragma acc loop gang, vector tile(16,16)   /* tiled */
+21, #pragma acc loop seq                         /* k sequential */
+```
+
+This is the canonical naive-matmul mapping: one thread per output
+element, no inter-thread reduction. ~16× faster.
+
+**v1 (explicit `gang vector(128)`):** does not even compile in NVC++
+25.5 — `vector(length:)` is "Illegal context" when combined with `gang`
+on a `parallel loop`. Would need to split into nested
+`parallel loop gang` + `loop vector(128)` to express the intent that way;
+`tile(...)` is the cleaner expression.
+
+### Why OpenMP target wasn't slow
+
+`#pragma omp target teams distribute parallel for collapse(2)` lowers
+through a different NVHPC path that flattens (i,j) across teams×threads
+and leaves the inner k-loop to each thread serially — i.e., it
+accidentally lands on the same mapping that `tile(...)` gives OpenACC.
+That is why the OpenMP target version was already fast in the original
+results.
+
+### One-line fix
+
+Change `src/app_openacc.c` from
+
+```c
+#pragma acc parallel loop collapse(2) ...
+```
+
+to
+
+```c
+#pragma acc parallel loop tile(16,16) ...
+```
+
+at both the warmup pragma (line 31) and the timed pragma (line 49). No
+other changes needed; brings OpenACC `compute_s` at n=4096 from 0.819 s
+down to ~0.05 s — within range of OpenMP target / CUDA.
+
+The Sirius reproduction script and full `-Minfo=accel` output are at
+`jobs/sirius/openacc_scheduling_test/run.sh` (ClearML task
+`8ddafbe45eb743e9acc263f59b171c29`).
 
 ## Files
 
@@ -106,4 +201,7 @@ points (`time` in seconds, `GFLOP/s = 2 n³ / compute_s / 1e9`):
   `src/app_cuda.cu`, `src/app_pytorch.py`, `src/common.h`, `Makefile`
 - `results/results.csv`, `results/raw.log`, `results/runtime_vs_size.png`,
   `results/pbs.out`
+- `results/openacc_scheduling_sirius.csv` — follow-up scheduling sweep
+  (default vs `gang vector(128)` vs `tile(16,16)` vs `tile(32,32)`) on
+  Sirius A100, supporting the root-cause analysis above.
 - `AI_USAGE.md`

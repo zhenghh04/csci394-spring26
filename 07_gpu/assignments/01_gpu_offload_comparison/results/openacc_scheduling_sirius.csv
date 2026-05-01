@@ -1,0 +1,13 @@
+variant,pragma,n,iters,compute_s,gflops,notes
+v0_default,parallel loop collapse(2),1024,5,1.411e-02,152.2,gang(i+j) + vector(128) on k with implicit reduction
+v0_default,parallel loop collapse(2),2048,5,8.843e-02,194.3,
+v0_default,parallel loop collapse(2),4096,5,8.179e-01,168.0,
+v1_gangvec128,parallel loop collapse(2) gang vector(128),1024,5,,,build error: NVC++-S-0155 Illegal context for gang(num) or vector(length)
+v1_gangvec128,parallel loop collapse(2) gang vector(128),2048,5,,,build error
+v1_gangvec128,parallel loop collapse(2) gang vector(128),4096,5,,,build error
+v2_tile_16x16,parallel loop tile(16x16),1024,5,7.474e-04,2873.1,gang+vector tiled(i+j); k sequential per thread
+v2_tile_16x16,parallel loop tile(16x16),2048,5,5.523e-03,3110.7,
+v2_tile_16x16,parallel loop tile(16x16),4096,5,5.060e-02,2716.4,
+v3_tile_32x32,parallel loop tile(32x32),1024,5,8.465e-04,2536.8,gang+vector tiled(i+j) 1024 threads/block
+v3_tile_32x32,parallel loop tile(32x32),2048,5,6.317e-03,2719.5,
+v3_tile_32x32,parallel loop tile(32x32),4096,5,4.300e-02,3195.9,
