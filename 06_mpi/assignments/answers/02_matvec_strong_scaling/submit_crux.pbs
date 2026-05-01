@@ -1,0 +1,53 @@
+#!/bin/bash -l
+#PBS -A datascience
+#PBS -q workq-route
+#PBS -l select=16
+#PBS -l walltime=01:00:00
+#PBS -l filesystems=home:eagle
+#PBS -N mpi02_matvec
+#PBS -j oe
+
+set -e
+cd "$PBS_O_WORKDIR"
+
+module swap PrgEnv-cray PrgEnv-gnu 2>/dev/null || true
+
+echo "=== PBS context ==="
+echo "Host: $(hostname)  Date: $(date)"
+[ -f "$PBS_NODEFILE" ] && echo "Total nodes: $(wc -l < $PBS_NODEFILE)"
+echo "==================="
+
+# main_series.c uses clock_gettime; under Cray PE GCC the POSIX feature macro is needed
+mpicc -O3 -std=c11 -D_POSIX_C_SOURCE=199309L -Wall -Wextra -o main_mpi.x    main_mpi.c
+mpicc -O3 -std=c11 -D_POSIX_C_SOURCE=199309L -Wall -Wextra -o main_series.x main_series.c
+
+N=64000
+ITERS=5
+WARMUP=1
+SYSTEM=crux
+
+CSV=timing.csv
+echo "system,nodes,nproc,n,iters,warmup,scatter_s,bcast_s,compute_s,gather_s,total_s" > $CSV
+
+echo "--- Serial baseline ---"
+SERIAL_OUT=$(./main_series.x $N $ITERS $WARMUP)
+echo "$SERIAL_OUT"
+TS_PER_ITER=$(echo "$SERIAL_OUT" | grep -oE 'time_per_iter_s=[0-9.]+' | head -1 | cut -d= -f2)
+echo "${SYSTEM},0,1,${N},${ITERS},${WARMUP},0,0,${TS_PER_ITER},0,${TS_PER_ITER}" >> $CSV
+
+# Strong scaling sweep: nproc = 8, 16, 32, 64, 128 with ppn=8 (1, 2, 4, 8, 16 nodes)
+for NPROC in 8 16 32 64 128; do
+    NODES=$((NPROC / 8))
+    echo "--- nproc=$NPROC nodes=$NODES ppn=8 ---"
+    OUT=$(mpiexec -n $NPROC --ppn 8 ./main_mpi.x $N $ITERS $WARMUP)
+    echo "$OUT"
+    SC=$(echo "$OUT" | grep -oE 'scatter_s=[0-9.]+' | head -1 | cut -d= -f2)
+    BC=$(echo "$OUT" | grep -oE 'bcast_s=[0-9.]+'   | head -1 | cut -d= -f2)
+    CO=$(echo "$OUT" | grep -oE 'compute_s=[0-9.]+' | head -1 | cut -d= -f2)
+    GA=$(echo "$OUT" | grep -oE 'gather_s=[0-9.]+'  | head -1 | cut -d= -f2)
+    TO=$(echo "$OUT" | grep -oE 'total_s=[0-9.]+'   | head -1 | cut -d= -f2)
+    echo "${SYSTEM},${NODES},${NPROC},${N},${ITERS},${WARMUP},${SC},${BC},${CO},${GA},${TO}" >> $CSV
+done
+
+echo "=== CSV ==="
+cat $CSV

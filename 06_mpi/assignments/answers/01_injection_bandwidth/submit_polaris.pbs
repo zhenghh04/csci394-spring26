@@ -1,0 +1,48 @@
+#!/bin/bash -l
+#PBS -A datascience
+#PBS -q debug
+#PBS -l select=2
+#PBS -l walltime=00:30:00
+#PBS -l filesystems=home:eagle
+#PBS -N mpi01_inj_bw
+#PBS -j oe
+
+set -e
+cd "$PBS_O_WORKDIR"
+
+module load PrgEnv-gnu 2>/dev/null || true
+module load craype-x86-milan 2>/dev/null || true
+module load cray-mpich 2>/dev/null || true
+
+echo "=== PBS context ==="
+echo "Host: $(hostname)  Date: $(date)"
+echo "PBS_NODEFILE=$PBS_NODEFILE"
+[ -f "$PBS_NODEFILE" ] && echo "Nodes: $(cat $PBS_NODEFILE | tr '\n' ' ')"
+echo "==================="
+
+# Cray PE wrapper: use `cc`, not mpicc
+cc -O3 -std=c11 -Wall -Wextra -o app_injection main_injection.c
+
+MSG_BYTES=1048576
+ITERS=200
+WARMUP=50
+SYSTEM=polaris
+
+CSV=results_${SYSTEM}.csv
+echo "system,nodes,total_ranks,message_bytes,bw_GBps,max_elapsed_s,repeat" > $CSV
+
+# Polaris node has 32 cores; sweep up through ppn=32
+for TOTAL_RANKS in 2 4 8 16 32 64; do
+    PPN=$((TOTAL_RANKS / 2))
+    for REPEAT in 1 2 3; do
+        echo "--- total_ranks=$TOTAL_RANKS ppn=$PPN repeat=$REPEAT ---"
+        OUT=$(mpiexec -n $TOTAL_RANKS --ppn $PPN ./app_injection $MSG_BYTES $ITERS $WARMUP)
+        echo "$OUT"
+        BW=$(echo "$OUT" | grep -oE 'bw_GBps=[0-9.]+' | head -1 | cut -d= -f2)
+        ELAPSED=$(echo "$OUT" | grep -oE 'max_elapsed_s=[0-9.]+' | head -1 | cut -d= -f2)
+        echo "${SYSTEM},2,${TOTAL_RANKS},${MSG_BYTES},${BW},${ELAPSED},${REPEAT}" >> $CSV
+    done
+done
+
+echo "=== CSV ==="
+cat $CSV
