@@ -3,14 +3,10 @@ Dated: Feb 7, 2026
 # Multiple Choice (8 questions, 8 pts each) - Please highlight the correct answer
 
 1.  Which is the slide’s definition of **architecture in HPC**?
-
-> A. The physical layout of racks and cables
->
-> B. The organization and functionality of constituent components and the logical ISA presented to programs
->
-> C. The programming model used by applications
->
-> D. The performance ranking of the system
+    > A. The physical layout of racks and cables
+    > B. The organization and functionality of constituent components and the logical ISA presented to programs
+    > C. The programming model used by applications
+    > D. The performance ranking of the system
 
 2.  In HPC, “performance” is generally measured as:  
     > A. Peak clock frequency B. Work accomplished per unit time  
