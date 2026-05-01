@@ -48,7 +48,7 @@ the 1-thread reference.
 All seven thread counts produced bit-for-bit identical output files
 (via `diff -q loopy_t1.dat loopy_t<T>.dat`):
 
-```
+```text
 OK:   loopy_t1.dat   matches loopy_t1.dat
 OK:   loopy_t2.dat   matches loopy_t1.dat
 OK:   loopy_t4.dat   matches loopy_t1.dat
@@ -60,7 +60,7 @@ OK:   loopy_t64.dat  matches loopy_t1.dat
 
 The 1-thread reference values for N = 2048:
 
-```
+```text
 Sample Matrix[500][500]: 1.500000
 Sample RowSums[500]:     5216.256000
 Total Sum:              25141.254000

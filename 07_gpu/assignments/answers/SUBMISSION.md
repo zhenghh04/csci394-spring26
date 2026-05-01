@@ -13,7 +13,7 @@ model, and what was changed manually.
 
 ## Layout
 
-```
+```text
 01_gpu_offload_comparison/
   src/        — CPU / OpenACC / OpenMP target / CUDA / PyTorch GEMM
   Makefile    — Polaris (NVHPC + nvcc)

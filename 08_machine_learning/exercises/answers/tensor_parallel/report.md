@@ -27,7 +27,7 @@ a full `[M, N]` partial result.
 
 A matrix product over a contracted index is a sum:
 
-```
+```text
 C[i, j] = Σ_k  A[i, k] * B[k, j]
         = Σ_p  ( Σ_{k ∈ shard_p}  A[i, k] * B[k, j] )
         = Σ_p  local_C_p[i, j]
@@ -48,7 +48,7 @@ optimized for.
 This is the column-parallel pattern: `B` is sharded along `N` instead of
 `K`, and `A` is replicated.
 
-```
+```text
 A : [M, K]  (replicated)
 B : [K, N]  →  B_p : [K, N/P]   (each rank owns a column block)
 

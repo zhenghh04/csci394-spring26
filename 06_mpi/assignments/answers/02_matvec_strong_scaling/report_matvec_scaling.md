@@ -52,7 +52,7 @@ Raw rows in `timing.csv`.
 
 The algorithmic root cause is the **communication-to-compute ratio**. Per iteration:
 
-```
+```text
 compute work / rank  = O(n² / p) flops
 scatter volume / rank = O(n² / p) bytes (received from root)
 ratio (flops / byte) = O(1)

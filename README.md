@@ -18,8 +18,7 @@ This github repo contains example codes that is used in CSCI 394 - High Performa
 - [00_powershell_env](00_powershell_env) - PowerShell command line basics.
 - [00_pbs](00_pbs) - Running jobs on HPC systems with PBS Pro.
 - [01_mpi_pi](01_mpi_pi) - MPI4PY Monte Carlo pi example + scaling.
-- [02_pi_gpu](02_pi_gpu) - GPU/CPU pi example (PyTorch).
-- [03_pi_torch_dist](03_pi_torch_dist) - Distributed PyTorch pi with `mpiexec`.
+- [03_pi_gpu_dist](03_pi_gpu_dist) - GPU/CPU and distributed PyTorch pi examples.
 - [04_benchmarks](04_benchmarks) - HPL, file-per-rank I/O, and MPI ping-pong tests.
 - [05_openmp](05_openmp) - OpenMP examples from basic to intermediate.
 - [06_mpi](06_mpi) - MPI hands-on C examples from hello world to collectives and reductions.

@@ -5,7 +5,7 @@ Source: [`../../3d_parallel/train_transformer_3d_parallel.py`](../../3d_parallel
 The script benchmarks an 8-layer GPT-style transformer with three
 parallelism dimensions composed on a 3D rank mesh:
 
-```
+```text
 rank = dp_rank · (pp_size · tp_size) + pp_rank · tp_size + tp_rank
 dp_size = world_size / (tp_size · pp_size)
 ```
@@ -83,7 +83,7 @@ forward and backward passes use **blocking** `dist.send` / `dist.recv` and
 process **one micro-batch** per step. The execution order on `pp_size = K`
 stages is:
 
-```
+```text
 time → →
 stage 0:  [F0]                        [B0]
 stage 1:        [F1]            [B1]

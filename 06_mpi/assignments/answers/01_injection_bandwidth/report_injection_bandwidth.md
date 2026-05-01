@@ -14,7 +14,7 @@ Half-to-half ping-pong on **2 nodes** with `mpiexec -n N --ppn N/2 ./app_injecti
 
 For `half` independent pairs each exchanging `2 × msg_bytes` per iteration (one direction each way):
 
-```
+```text
 bw_GBps = (2 × msg_bytes × iters × half) / max_elapsed / 1e9
 ```
 
@@ -59,7 +59,7 @@ Each NIC ≈ 25 GB/s per direction; `wire ceiling = NICs/node × 25 × 2 directi
 
 The three systems sit at the **same ~83–86% fraction of their NIC ceiling** at peak — what differs is the absolute injection capacity, which scales linearly with NICs per node:
 
-```
+```text
 Crux : Polaris : Aurora ≈ 41 : 84 : 344  ≈  1 : 2 : 8   (matches the NIC ratio)
 ```
 

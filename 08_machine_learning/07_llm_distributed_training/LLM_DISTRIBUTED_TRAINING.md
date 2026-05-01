@@ -84,7 +84,7 @@ Modern LLM training usually combines several forms of parallelism.
 | FSDP / ZeRO | parameters, gradients, optimizer state | reduces memory per GPU | more frequent gather/scatter traffic |
 | Sequence or context parallelism | sequence dimension | helps with long-context training | attention-related communication |
 
-![LLM parallelism strategies](../tutorials/figures/llm_parallelism.svg)
+![LLM parallelism strategies](../03_cifar10_cnn/figures/llm_parallelism.svg)
 
 ### 3.1 Data Parallelism
 
