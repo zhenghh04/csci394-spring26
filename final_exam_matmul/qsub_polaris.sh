@@ -6,7 +6,7 @@
 #PBS -q R7115122
 
 cd ${PBS_O_WORKDIR}
-
+module use /soft/modulefiles
 module load nvhpc/23.3
 
 make clean && make
