@@ -5,9 +5,10 @@ CSCI 394 High Performance Computing | Spring 2026
 ## Overview
 
 Complete the CUDA kernel and host code in `matmul.cu` to compute **C = A × B**
-for square FP32 matrices of sizes n = 16, 64, 256, 1024, and 4096.
-The program measures the average kernel time over 10 iterations and reports
-achieved GFLOPS and hardware efficiency relative to the A100's peak (19,500 GFLOPS).
+for square FP32 matrices of sizes n = 16, 64, 256, 1024, 4096, and 16384.
+The program measures the average kernel time over 10 iterations (plus one warmup)
+and reports achieved GFLOPS and hardware efficiency relative to the A100 peak
+(19,500 GFLOPS).
 
 ## Files
 
@@ -19,7 +20,7 @@ achieved GFLOPS and hardware efficiency relative to the A100's peak (19,500 GFLO
 
 ## Your Tasks
 
-Open `matmul.cu` and complete the six `TODO` steps:
+Open `matmul.cu` and complete the TODO steps:
 
 1. **Kernel inner loop** — accumulate `C[row][col] = Σ_k A[row][k] * B[k][col]`
 2. **Allocate** device memory (`cudaMalloc`) for `d_A`, `d_B`, `d_C`
@@ -27,6 +28,10 @@ Open `matmul.cu` and complete the six `TODO` steps:
 4. **Set grid dimensions** — `dim3 grid((n+BLK-1)/BLK, (n+BLK-1)/BLK)`
 5. **Compute** `gflops` and `efficiency` from the measured time
 6. **Copy** `d_C` back to `h_C` and **free** all device memory
+
+> **AI tools are permitted** for this part of the exam. You may use ChatGPT,
+> Claude, Copilot, or similar tools to help write and debug the code.
+> You must still run the program yourself on Polaris and record your own results.
 
 ## Build
 
@@ -67,12 +72,29 @@ n=   64  ...
 n=  256  ...
 n= 1024  ...
 n= 4096  ...
+n=16384  ...
 ```
+
+## Submission — Upload to Canvas
+
+After running on Polaris, **save the terminal output to a text file** and
+**upload it to Canvas** under the Final Exam assignment before the end of the
+exam period (by **11:00 AM CT, May 5, 2026**).
+
+```bash
+# Redirect output to a file
+./matmul | tee matmul_results.txt
+
+# Or if using qsub, the output is saved automatically to
+# a file named after your job (e.g., DLIO.oXXXXXX)
+```
+
+Upload **`matmul_results.txt`** (or the PBS output file) to Canvas.
+The grader will verify your results match what you record on the exam sheet.
 
 ## Questions to Answer (on exam sheet)
 
 - **(a)** Write the inner loop body for the kernel.
 - **(b)** Write the expressions for `gflops` and `efficiency`.
 - **(c)** Record your measured results in the table on the exam sheet.
-- **Discussion:** Why does efficiency increase with n? What optimization
-  would improve efficiency at all sizes?
+- **(d)** Based on your results, explain why efficiency increases with $n$.
