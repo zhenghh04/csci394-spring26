@@ -92,9 +92,6 @@ exam period (by **11:00 AM CT, May 5, 2026**).
 Upload **`matmul_results.txt`** (or the PBS output file) to Canvas.
 The grader will verify your results match what you record on the exam sheet.
 
-## Questions to Answer (on exam sheet)
-
-- **(a)** Write the inner loop body for the kernel.
-- **(b)** Write the expressions for `gflops` and `efficiency`.
-- **(c)** Record your measured results in the table on the exam sheet.
-- **(d)** Based on your results, explain why efficiency increases with $n$.
+## Questions to Answer
+- **(a)** Record your measured results.
+- **(b)** Based on your results, explain why efficiency increases with $n$.
